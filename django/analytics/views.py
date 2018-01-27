@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 import datetime
 from analytics.forms import *
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from .filters import *
 
 #Takes a get request and parses the time in and out of each port kiosk combo

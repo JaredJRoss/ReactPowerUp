@@ -38,12 +38,12 @@ class Kiosk(models.Model):
         return "Kiosk:"+str(self.ID) + " with client "+self.Client.ClientName+" at location "+self.Location.LocationName
 
     ID = models.IntegerField(verbose_name="ID", primary_key=True)
-    Location = models.ForeignKey(Location,blank=True,null=True, related_name='KioskToLocation')
+    Location = models.ForeignKey(Location,blank=True,null=True, related_name='KioskToLocation' ,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client,related_name='KioskToClient' ,on_delete=models.CASCADE)
     CreatedOn= models.DateTimeField()
 class KioskHistory:
     ID = models.IntegerField(verbose_name="ID", primary_key=True)
-    Location = models.ForeignKey(Location,blank=True,null=True, related_name='KioskToLocation')
+    Location = models.ForeignKey(Location,blank=True,null=True, related_name='KioskToLocation' ,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client,related_name='KioskToClient' ,on_delete=models.CASCADE)
     CreatedOn= models.DateTimeField()
     DeactivatedOn = models.DateTimeField()
@@ -84,17 +84,17 @@ class Time(models.Model):
 class PartnerToClient(models.Model):
     def __str__(self):
         return "Partner:"+self.Partner.PartnerName + " has Client "+self.Client.ClientName
-    Partner = models.ForeignKey(Partner)
-    Client = models.ForeignKey(Client)
+    Partner = models.ForeignKey(Partner ,on_delete=models.CASCADE)
+    Client = models.ForeignKey(Client ,on_delete=models.CASCADE)
 
 class PartnerToKiosk(models.Model):
     def __str__(self):
         return "Partner:"+self.Partner.PartnerName + " has Kiosk "+str(self.Kiosk.ID)
-    Partner = models.ForeignKey(Partner)
-    Kiosk = models.ForeignKey(Kiosk)
+    Partner = models.ForeignKey(Partner ,on_delete=models.CASCADE)
+    Kiosk = models.ForeignKey(Kiosk ,on_delete=models.CASCADE)
 
 class ClientToType(models.Model):
     def __str__(self):
         return "Client:"+self.Client.ClientName + " has type "+self.Type.Type
-    Type = models.ForeignKey(Catergories)
-    Client = models.ForeignKey(Client)
+    Type = models.ForeignKey(Catergories ,on_delete=models.CASCADE)
+    Client = models.ForeignKey(Client ,on_delete=models.CASCADE)
