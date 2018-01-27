@@ -1,0 +1,83 @@
+
+{% load widget_tweaks %}
+{% load static %}
+<html>
+<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/dist/js/select2.full.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<body>
+<div>
+
+
+
+<table>
+  <tr>
+  <form method="POST" class="post-form">{%csrf_token%}
+  <td>
+    {% render_field clientform.ClientName class="form-control" placeholder="Add a name"%}
+  </td>
+  <td>
+    <button type = "submit">Add a new client</button>
+  </td>
+  </form>
+  </tr>
+  <tr>
+    <form method="POST" class="post-form">{%csrf_token%}
+    <td>
+      {% render_field locationform.LocationName class="form-control" placeholder="Add a location"%}
+    </td>
+
+    <td>
+      <button type = "submit">Add a new location</button>
+    </td>
+    </form>
+  </tr>
+  <tr>
+    <form method="POST" class="post-form">{%csrf_token%}
+      <td>
+        {% render_field kioskform.Client class="form-control" %}
+      </td>
+      <td>
+        {% render_field kioskform.Location class="form-control" %}
+      </td>
+      <td>
+        {% render_field kioskform.ID class="form-control" placeholder="Add an ID"%}
+      </td>
+      <td>
+      <button type = "submit">Add a new kiosk</button>
+    </td>
+    </form>
+  </tr>
+  <tr>
+    <form method="POST" class="post-form">{%csrf_token%}
+    <td>
+      {% render_field portform.Kiosk class="form-control" placeholder="Add a kiosk"%}
+    </td>
+    <td>
+      {% render_field portform.Type class="form-control" placeholder="Add a type"%}
+    </td>
+    <td>
+      {% render_field portform.Port class="form-control" placeholder="Add a port"%}
+    </td>
+    <td>
+      <button type = "submit">Add a new port</button>
+    </td>
+    </form>
+  </tr>
+</table>
+
+
+
+
+
+
+</div>
+</body>
+</html>

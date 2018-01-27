@@ -1,0 +1,116 @@
+
+html {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+
+
+.h2 {
+  font-family: 'Roboto', sans-serif;
+}
+.h5 {
+    font-family: 'Roboto', sans-serif;
+    color:rgb(50,50,50);
+}
+body{
+  padding-top: 70px;
+  background: -webkit-linear-gradient(left, #00C238, ##4CD473
+);
+  background: linear-gradient(to right, #00C238, #4CD473);
+  font-family: 'Roboto', sans-serif;
+}
+.container {
+  min-height: calc(100vh - 265px);
+  
+}
+.spacing1 {
+  height:2rem;
+}
+.spacing2 {
+  height:1rem;
+}
+.transparent_btn {
+  text-align:center;
+  position:center;
+	display: inline-block;
+	padding: 10px 14px;
+	color: #00C238;
+	border: solid #00C238;
+  border-width: 1px;
+	text-decoration: none;
+	font-size: 14px;
+	line-height: 120%;
+	background-color: rgba(0,0,0, 0);
+
+	-webkit-transition: background-color 300ms ease;
+	-moz-transition: background-color 300ms ease;
+	transition: background-color 300ms ease;
+	cursor: pointer;
+}
+a:visited {
+  color: #00C238;
+}
+.transparent_btn:hover {
+	background-color: #00C238;
+	color: #FFF;
+}
+
+/* admin_view table css */
+/* credit to https://codepen.io/nikhil8krishnan/pen/WvYPvv for table template */
+h1{
+  font-size: 30px;
+  color: rbg(50,50,50);
+  text-transform: uppercase;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+
+.form {
+   position: absolute;
+  width: 300px;
+  z-index: 15;
+  top: 35%;
+  left: 50%;
+  margin: -100px 0 0 -150px;
+
+  background: #FFFFFF;
+  max-width: 360px;
+  
+  padding: 45px;
+  text-align: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+.form input {
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.form button {
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  outline: 0;
+  background: #00C238;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+.form button:hover,.form button:active,.form button:focus {
+  background: #4CAF50;
+}

@@ -16,11 +16,15 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.views import generic
-
+from django.conf.urls import include
+from django.conf.urls.static import static
+from django.conf import settings
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^app2/',
         generic.TemplateView.as_view(template_name='sample_app2.html')),
     url(r'^$',
         generic.TemplateView.as_view(template_name='sample_app.html')),
-]
+    url(r'PowerUp/',include('analytics.urls')),
+    url(r'api-auth/',include('rest_framework.urls')),
+] + static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)

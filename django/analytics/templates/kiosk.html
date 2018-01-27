@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section>
+   
+    {% if status == "online" %}
+      <h1><img style="margin-top:-5px; height:25px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Green_sphere.svg/256px-Green_sphere.svg.png"/> <span>Kiosk Details</span></h1>
+    {% else %}
+      <h1><img style="margin-top:-5px; height:25px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Nuvola_apps_krec.svg/256px-Nuvola_apps_krec.svg.png"/> <span>Kiosk Details</span></h1>
+    {% endif %}
+    <div class="spacing1"> </div>
+    <a style="text-decoration: none;" class="transparent_btn" href="#">Sort 1</a>
+    <a style="text-decoration: none;" class="transparent_btn" href="#">Sort 2</a>
+    <div class="spacing2"> </div>
+
+
+    <div class="tbl-header">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <thead>
+          <tr>
+            <th>Port</th>
+            <th>Type</th>
+            <th>Total Up</th>
+            <th>Total Down </th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    <div class="tbl-content">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tbody>
+          <tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr><tr>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+            <td>placeholder</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="spacing1"> </div>
+    <div class="spacing1"> </div>
+    <div class="spacing1"> </div>
+    <div class="spacing1"> </div>
+    <h5> Admin Options </h5>
+    <div class="spacing1"> </div>
+    <a style="text-decoration: none;" class="transparent_btn" href="#">Ping</a>
+    <a style="text-decoration: none;" class="transparent_btn" href="#">Reboot</a>
+    <a style="text-decoration: none;" class="transparent_btn" href="#">Assign (To Partner)</a>
+
+
+
+
+  </section>
+
+  <div class="spacing1"> </div>
+  <div class="spacing1"> </div><div class="spacing1"> </div><div class="spacing1"> </div>
+
+
+  
+{% endblock %}

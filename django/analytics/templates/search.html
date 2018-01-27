@@ -1,0 +1,32 @@
+{% load static %}
+
+<html>
+<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/dist/js/select2.full.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<body>
+  {% load widget_tweaks %}
+
+  <form action='' method="Get">
+    <fieldset>
+      <legend>Location</legend>
+      Location: {% render_field kioskFilter.form.Location class="form-control" %}
+      <br>
+      Client: {% render_field kioskFilter.form.Client class="form-control" %}
+      <br>
+      Kiosk ID: {% render_field kioskFilter.form.ID class="form-control" %}
+      <br>
+      Type: {% render_field kioskFilter.form.Type class="form-control" %}
+    </fieldset>
+    <button type= 'submit'>Search </button>
+  </form>
+
+</body>
+</html>

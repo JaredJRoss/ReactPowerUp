@@ -38,6 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'webpack_loader',
+    'analytics',
+    'rest_framework',
+    'dal',
+    'dal_select2',
+    'crispy_forms',
+    'widget_tweaks',
+    'django_filters',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -123,6 +130,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'djreact/static'),
 ]
+STATIC_ROOT = os.path.join(BASE_DIR,'www','static')
 
 try:
     from .local_settings import *  # flake8: noqa

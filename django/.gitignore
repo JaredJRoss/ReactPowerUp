@@ -3,3 +3,8 @@ djreact/static/bundles/local/
 node_modules/
 webpack-stats-local.json
 webpack.local-settings.js
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
