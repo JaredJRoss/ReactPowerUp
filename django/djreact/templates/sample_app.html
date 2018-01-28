@@ -1,7 +1,7 @@
-{% extends "base.html" %}
+{% extends "basePower.html" %}
 {% load render_bundle from webpack_loader %}
 
-{% block main %}
+{% block content %}
 <div id="SampleApp"></div>
 {% render_bundle 'vendors' %}
 {% render_bundle 'SampleApp' %}
