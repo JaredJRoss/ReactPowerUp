@@ -23,6 +23,7 @@ urlpatterns=[
     url(r'^kiosk-autocomplete/$',KioskAutoComplete.as_view(), name='kiosk-autocomplete', ),
     url(r'^api/', include(router.urls)),
     url(r'^api/search$', Search.as_view(), name='search'),
+    url(r'kiosk/(?P<pk>\d+)$', kiosk_view, name='kiosk'),
     url(r'search/$',search,name='search')
 
 ]

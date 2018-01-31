@@ -1,16 +1,31 @@
-{% extends 'base.html' %}
+{% extends 'basePower.html' %}
 {% block content %}
 
 <section>
-   
+
     {% if status == "online" %}
       <h1><img style="margin-top:-5px; height:25px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Green_sphere.svg/256px-Green_sphere.svg.png"/> <span>Kiosk Details</span></h1>
     {% else %}
       <h1><img style="margin-top:-5px; height:25px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Nuvola_apps_krec.svg/256px-Nuvola_apps_krec.svg.png"/> <span>Kiosk Details</span></h1>
     {% endif %}
     <div class="spacing1"> </div>
-    <a style="text-decoration: none;" class="transparent_btn" href="#">Sort 1</a>
-    <a style="text-decoration: none;" class="transparent_btn" href="#">Sort 2</a>
+    <div class= "transparentbox"> </div>
+    <div style= "text-align:center">
+
+    <a style="text-decoration: none;" class="transparent_btn" href="?date=all">All Time</a>
+    <a style="text-decoration: none;" class="transparent_btn" href="?date=year">Last Year</a>
+    <a style="text-decoration: none;" class="transparent_btn" href="?date=quarter">Last Quarter</a>
+    <a style="text-decoration: none;" class="transparent_btn" href="?date=month">Last Month</a>
+    <a style="text-decoration: none;" class="transparent_btn" href="?date=week">Last Week</a>
+    <a style="text-decoration: none;" class="transparent_btn" href="?date=day">Last Day</a>
+    <a style="text-decoration: none;" class="transparent_btn" href="?date=hour">Last Hour</a>
+    <div class="spacing1"> </div>
+    <form action="#" method="get">
+      Start Date: <input type="text" name="start">
+      End Date: <input type="text" name="end">
+      <input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input>
+    </form>
+  </div>
     <div class="spacing2"> </div>
 
 
@@ -20,8 +35,9 @@
           <tr>
             <th>Port</th>
             <th>Type</th>
-            <th>Total Up</th>
-            <th>Total Down </th>
+            <th>Total Charges</th>
+            <th>Last Updated</th>
+            <th>Flag</th>
           </tr>
         </thead>
       </table>
@@ -107,5 +123,5 @@
   <div class="spacing1"> </div><div class="spacing1"> </div><div class="spacing1"> </div>
 
 
-  
+
 {% endblock %}

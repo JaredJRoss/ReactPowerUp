@@ -21,7 +21,11 @@ def upload(request):
             p = Port.object.get(Port=int(port), Kiosk = K)
             print('Kiosk:',K,' Port:',p,' Start:',start," End:",end)
     return render(request,'admin_view.html')
+def filter_dates(times):
+    return 1
 
+def kiosk_view(request,pk):
+    return render(request,'kiosk.html')
 #creating everything that is needed like client location and kiosk
 def make_user(request):
     print(request.POST)

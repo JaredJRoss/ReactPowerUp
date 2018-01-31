@@ -41,10 +41,11 @@ class Kiosk(models.Model):
     Location = models.ForeignKey(Location,blank=True,null=True, related_name='KioskToLocation' ,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client,related_name='KioskToClient' ,on_delete=models.CASCADE)
     CreatedOn= models.DateTimeField()
-class KioskHistory:
-    ID = models.IntegerField(verbose_name="ID", primary_key=True)
-    Location = models.ForeignKey(Location,blank=True,null=True, related_name='KioskToLocation' ,on_delete=models.CASCADE)
-    Client = models.ForeignKey(Client,related_name='KioskToClient' ,on_delete=models.CASCADE)
+
+class KioskHistory(models.Model):
+    ID = models.IntegerField(verbose_name="HistID", primary_key=True)
+    Location = models.ForeignKey(Location,blank=True,null=True, related_name='KioskHistToLocation' ,on_delete=models.CASCADE)
+    Client = models.ForeignKey(Client,related_name='KioskHistToClient' ,on_delete=models.CASCADE)
     CreatedOn= models.DateTimeField()
     DeactivatedOn = models.DateTimeField()
     #Port number on the board for charging need to identify with port number and kiosk

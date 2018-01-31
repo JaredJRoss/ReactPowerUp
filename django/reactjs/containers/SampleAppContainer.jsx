@@ -13,7 +13,7 @@ export default class SampleAppContainer extends React.Component {
     return (
       <div classNameName="container">
       <section>
-          <h1>Monthly Snapshot</h1>
+          <h1>Welcome</h1>
           <div className="spacing1">
 
           </div>
@@ -21,20 +21,40 @@ export default class SampleAppContainer extends React.Component {
           <div className = "transparentbox"> </div>
           <div className="spacing1"> </div>
 
-          <div style={{text_align:'center'}}>
-              <a style={{text_decoration: 'none'}} className="transparent_btn" href="#">Do something with this button</a>
+          <div style={{textAlign:'center'}}>
+          <a style={{text_decoration:"none"}} className="transparent_btn" href="?date=all">All Time</a>
+          <a style={{text_decoration:"none"}} className="transparent_btn" href="?date=year">Last Year</a>
+          <a style={{text_decoration:"none"}} className="transparent_btn" href="?date=quarter">Last Quarter</a>
+          <a style={{text_decoration:"none"}} className="transparent_btn" href="?date=month">Last Month</a>
+          <a style={{text_decoration:"none"}} className="transparent_btn" href="?date=week">Last Week</a>
+          <a style={{text_decoration:"none"}} className="transparent_btn" href="?date=day">Last Day</a>
+          <a style={{text_decoration:"none"}} className="transparent_btn" href="?date=hour">Last Hour</a>
+          <div className="spacing1"> </div>
+          <form action="#" method="get">
+            Start Date: <input type="text" name="start"></input>   &nbsp;   &nbsp;
+            End Date: <input type="text" name="end"></input>
+            <input style={{text_decoration:"none"}} type= "submit"class="transparent_btn" ></input>
+          </form>
+          <div className="spacing1"> </div>
+          <a style={{text_decoration:"none"}} href="#hidden-div" data-target="#hidden-div" className="transparent_btn" data-toggle="collapse">Advanced Search</a>
+            <div id ="hidden-div" className ="collapse" style={{color:"black"}}>
               <div className="spacing1"> </div>
-              <a style={{text_decoration:"none"}} href="#hidden-div" data-target="#hidden-div" className="transparent_btn" data-toggle="collapse">This is the button that shows collapsed elements</a>
-              <div id ="hidden-div" className ="collapse" style={{color:"black"}}>
-                  <div className="spacing1"> </div>
-                  Place search/ whatever in here
+              <form>
+              <fieldset>
+                Location: <select name="Location" className="form-control" id="id_Location" data-autocomplete-light-url="/PowerUp/location-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
+                &nbsp;  &nbsp; Client: <select name="Client" className="form-control" id="id_Client" data-autocomplete-light-url="/PowerUp/client-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
+                <div className="spacing1"> </div>
 
-              </div>
+                Kiosk ID: <select name="ID" className="form-control" id="id_ID" data-autocomplete-light-url="/PowerUp/kiosk-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
+                &nbsp;  &nbsp;  Type: <select name="ID" className="form-control" id="id_ID" data-autocomplete-light-url="/PowerUp/kiosk-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
 
+              </fieldset>
+              <div className="spacing1"> </div>
+              <input style={{text_decoration:"none"}} value = "Search" type= "submit" class="transparent_btn" ></input>
+              </form>
 
-
+             </div>
           </div>
-
           <div className="spacing1"> </div>
           <div className="spacing1"> </div>
           <div className="spacing1"> </div>
@@ -44,7 +64,7 @@ export default class SampleAppContainer extends React.Component {
           <div className="spacing1"> </div>
 
           <div className="tbl-header">
-            <table cellpadding="0" cellspacing="0" border="0">
+            <table cellPadding="0" cellspacing="0" border="0">
               <thead>
                 <tr>
                   <th>Client</th>
@@ -57,17 +77,14 @@ export default class SampleAppContainer extends React.Component {
             </table>
           </div>
           <div className="tbl-content">
-            <table cellpadding="0" cellspacing="0" border="0">
+            <table cellPadding="0" cellspacing="0" border="0">
               <tbody>
               </tbody>
             </table>
           </div>
           <div className="spacing1"> </div>
-          <a className="transparent_btn" href="#">Add</a>
         </section>
 
-        <div className="spacing1"> </div>
-        <div className="spacing1"> </div><div className="spacing1"> </div><div className="spacing1"> </div>
 
       </div>
     )
