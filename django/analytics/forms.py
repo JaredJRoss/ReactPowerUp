@@ -14,9 +14,11 @@ class LocationForm(forms.ModelForm):
         fields = ('LocationName',)
 
 class KioskForm(forms.ModelForm):
+    ID = forms.IntegerField(required=False)
     class Meta:
         model = Kiosk
         fields = '__all__'
+        exclude = ('CreatedOn',)
         widgets = {
         'Client':autocomplete.ModelSelect2(url='analytics:client-autocomplete'),
         'Location':autocomplete.ModelSelect2(url='analytics:location-autocomplete')
@@ -27,6 +29,4 @@ class PortForm(forms.ModelForm):
     class Meta:
         model = Port
         fields = '__all__'
-        widgets = {
-        'Kiosk':autocomplete.ModelSelect2(url='analytics:kiosk-autocomplete'),
-        }
+        exclude = ('Kiosk',)

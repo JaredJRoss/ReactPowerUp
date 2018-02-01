@@ -1,6 +1,17 @@
 {% extends 'basePower.html' %}
 {% block content %}
-
+{%load static%}
+{% load widget_tweaks %}
+<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/dist/js/select2.full.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
 <section>
 
     {% if status == "online" %}
@@ -20,7 +31,7 @@
     <a style="text-decoration: none;" class="transparent_btn" href="?date=day">Last Day</a>
     <a style="text-decoration: none;" class="transparent_btn" href="?date=hour">Last Hour</a>
     <div class="spacing1"> </div>
-    <form action="#" method="get">
+    <form action="" method="get">
       Start Date: <input type="text" name="start">
       End Date: <input type="text" name="end">
       <input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input>
@@ -45,69 +56,41 @@
     <div class="tbl-content">
       <table cellpadding="0" cellspacing="0" border="0">
         <tbody>
+          {%for p in ports%}
           <tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-          </tr><tr>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
-            <td>placeholder</td>
+            <td>{{p.Port}}</td>
+            <td>{{p.Type}}</td>
+            <td>{{p.Type}}</td>
+            <td>{{p.Type}}</td>
+            <td>{{p.Type}}</td>
+
+          </tr>
+          {%endfor%}
+          <tr>
+            <form action="" method="POST">
+              {% csrf_token %}
+            <td>{% render_field portform.Port class="form-control" %}</td>
+            <td>{% render_field portform.Type class="form-control" %}</td>
+            <td><input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input></td>
+          </form>
+
           </tr>
         </tbody>
       </table>
     </div>
     <div class="spacing1"> </div>
     <div class="spacing1"> </div>
+    <form method = "POST" action="">
+      {% csrf_token %}
+    Location: {% render_field kioskform.Location class="form-control" %}
     <div class="spacing1"> </div>
+    Client: {% render_field kioskform.Client class="form-control" %}
     <div class="spacing1"> </div>
+    <input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input>
+
+  </form>
+    <div class="spacing1"> </div>
+
     <h5> Admin Options </h5>
     <div class="spacing1"> </div>
     <a style="text-decoration: none;" class="transparent_btn" href="#">Ping</a>

@@ -5,6 +5,7 @@ from analytics.forms import *
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .filters import *
+from django.shortcuts import get_object_or_404
 
 #Takes a get request and parses the time in and out of each port kiosk combo
 def upload(request):
@@ -21,11 +22,39 @@ def upload(request):
             p = Port.object.get(Port=int(port), Kiosk = K)
             print('Kiosk:',K,' Port:',p,' Start:',start," End:",end)
     return render(request,'admin_view.html')
+
 def filter_dates(times):
     return 1
 
 def kiosk_view(request,pk):
-    return render(request,'kiosk.html')
+    if request.user.is_authenticated:
+        print('POST',request.POST)
+        kiosk = get_object_or_404(Kiosk, ID=pk)
+        query_set = Kiosk.objects.none()
+        if request.user.username == kiosk.Client.ClientName or 1==1:
+            port = Port.objects.filter(Kiosk=kiosk)
+            portform = PortForm(request.POST)
+            if portform.is_valid():
+                new_port = portform.save(commit=False)
+                new_port.Kiosk = kiosk
+                new_port.save()
+                print(new_port)
+                return HttpResponseRedirect(reverse('analytics:kiosk', args=[pk]))
+            kioskform = KioskForm(request.POST or None,instance= kiosk)
+            if kioskform.is_valid():
+                kiosk = Kiosk.objects.get(ID=pk)
+                kiosk.Location = kioskform.cleaned_data['Location']
+                kiosk.Client = kioskform.cleaned_data['Client']
+                kiosk.save()
+                print(kiosk)
+                return HttpResponseRedirect(reverse('analytics:kiosk', args=[pk]))
+
+            context = {
+            'ports':port,
+            'kioskform':kioskform,
+            'portform':portform
+            }
+            return render(request,'kiosk.html',context)
 #creating everything that is needed like client location and kiosk
 def make_user(request):
     print(request.POST)
@@ -85,6 +114,13 @@ class KioskAutoComplete(autocomplete.Select2QuerySetView):
         qs = Kiosk.objects.all().order_by("ID")
         if self.q:
             qs = qs.filter(ID__icontains=self.q)
+        return qs
+class TypeAutoComplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+    #add authentication django-autocomplete light .readdocs.io
+        qs = Catergories.objects.all().order_by("Type")
+        if self.q:
+            qs = qs.filter(Type__icontains=self.q)
         return qs
 
 def search(request):

@@ -21,6 +21,7 @@ urlpatterns=[
     url(r'^client-autocomplete/$',ClientAutoComplete.as_view(), name='client-autocomplete', ),
     url(r'^location-autocomplete/$',LocationAutoComplete.as_view(), name='location-autocomplete', ),
     url(r'^kiosk-autocomplete/$',KioskAutoComplete.as_view(), name='kiosk-autocomplete', ),
+    url(r'^type-autocomplete/$',TypeAutoComplete.as_view(), name='type-autocomplete', ),
     url(r'^api/', include(router.urls)),
     url(r'^api/search$', Search.as_view(), name='search'),
     url(r'kiosk/(?P<pk>\d+)$', kiosk_view, name='kiosk'),

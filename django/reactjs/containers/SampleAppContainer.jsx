@@ -41,12 +41,12 @@ export default class SampleAppContainer extends React.Component {
               <div className="spacing1"> </div>
               <form>
               <fieldset>
-                Location: <select name="Location" className="form-control" id="id_Location" data-autocomplete-light-url="/PowerUp/location-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
-                &nbsp;  &nbsp; Client: <select name="Client" className="form-control" id="id_Client" data-autocomplete-light-url="/PowerUp/client-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
+                Location: <select name="Location" className="form-control" id="id_Location" data-autocomplete-light-url="/location-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
+                &nbsp;  &nbsp; Client: <select name="Client" className="form-control" id="id_Client" data-autocomplete-light-url="/client-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
                 <div className="spacing1"> </div>
 
-                Kiosk ID: <select name="ID" className="form-control" id="id_ID" data-autocomplete-light-url="/PowerUp/kiosk-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
-                &nbsp;  &nbsp;  Type: <select name="ID" className="form-control" id="id_ID" data-autocomplete-light-url="/PowerUp/kiosk-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
+                Kiosk ID: <select name="ID" className="form-control" id="id_ID" data-autocomplete-light-url="/kiosk-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
+                &nbsp;  &nbsp;  Type: <select name="Type" className="form-control" id="id_Type" data-autocomplete-light-url="/type-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
 
               </fieldset>
               <div className="spacing1"> </div>

@@ -25,6 +25,6 @@ urlpatterns = [
         generic.TemplateView.as_view(template_name='sample_app2.html')),
     url(r'^$',
         generic.TemplateView.as_view(template_name='sample_app.html')),
-    url(r'PowerUp/',include('analytics.urls')),
+    url(r'',include('analytics.urls')),
     url(r'api-auth/',include('rest_framework.urls')),
 ] + static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
