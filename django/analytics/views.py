@@ -1,11 +1,19 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
+from django.core.exceptions import ImproperlyConfigured
 import datetime
+import dateutil
+from dateutil import parser
+from datetime import timedelta
 from analytics.forms import *
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .filters import *
 from django.shortcuts import get_object_or_404
+from django import http
+import re
+from dateutil.relativedelta import relativedelta
+from django.db.models import Sum
 
 #Takes a get request and parses the time in and out of each port kiosk combo
 def upload(request):
@@ -23,16 +31,66 @@ def upload(request):
             print('Kiosk:',K,' Port:',p,' Start:',start," End:",end)
     return render(request,'admin_view.html')
 
-def filter_dates(times):
-    return 1
+def filter_dates(times,GET):
+    start_date = datetime.datetime.now().replace(year=2015)
+    end_date = datetime.datetime.now()
+    last = GET.get("date",None)
+    if last:
+        if last == 'hour':
+            start_date = start_date - timedelta(hours=1)
+        elif last == 'day':
+            start_date = start_date - timedelta(days=1)
+        elif last == 'week':
+            start_date = start_date - timedelta(days=7)
+        elif last == 'month':
+            start_date = start_date - relativedelta(months=1)
+        elif last == 'quarter':
+            start_date = start_date - relativedelta(months=3)
+        elif last == 'year':
+            start_date = start_date.replace(month=1,day=1)
+    start = GET.get('start',None)
+    if start:
+        start_date = parser.parse(start)
+    end = GET.get('end',None)
+    if end:
+        end_date = parser.parse(end)
+    return times.filter(TimeIn__range=(start_date,end_date))
 
 def kiosk_view(request,pk):
     if request.user.is_authenticated:
         print('POST',request.POST)
         kiosk = get_object_or_404(Kiosk, ID=pk)
-        query_set = Kiosk.objects.none()
-        if request.user.username == kiosk.Client.ClientName or 1==1:
+        client = False
+        partner = False
+        if request.user.groups.filter(name='Partner').exists():
+            partner = PartnerToKiosk.objects.get(Partner__PartnerName = request.user, Kiosk= kiosk)
+            perm = 'partner'
+        elif request.user.groups.filter(name='Client').exists():
+            client  = request.user.username == kiosk.Client.ClientName
+            perm = 'client'
+        else:
+            perm='admin'
+        if client or partner or request.user.groups.filter(name='Admin').exists():
+            port_arr = []
             port = Port.objects.filter(Kiosk=kiosk)
+            times = Time.objects.filter(Port__in=port)
+            times = filter_dates(times,request.GET)
+            for p in port:
+                try:
+                    temp_time = times.filter(Port= p)
+                    last_update = temp_time.latest('TimeOut').TimeOut.replace(tzinfo=None)
+                    total_count = temp_time.count()
+                    elasped_time =  last_update - datetime.datetime.now().replace(tzinfo=None)
+                    if elasped_time.days < -10:
+                        flag = True
+                    else:
+                        flag = False
+                except Time.DoesNotExist:
+                    last_update = None
+                    total_count = 0
+                    flag = True
+                port_arr.append({'Type':p.Type,'Port':p.Port,'Last_Update':last_update,'Flag':flag,'Total':total_count})
+            print(times.count(),times.aggregate(Sum('Duration'))['Duration__sum'])
             portform = PortForm(request.POST)
             if portform.is_valid():
                 new_port = portform.save(commit=False)
@@ -50,9 +108,10 @@ def kiosk_view(request,pk):
                 return HttpResponseRedirect(reverse('analytics:kiosk', args=[pk]))
 
             context = {
-            'ports':port,
+            'ports':port_arr,
             'kioskform':kioskform,
-            'portform':portform
+            'portform':portform,
+            'permission':perm,
             }
             return render(request,'kiosk.html',context)
 #creating everything that is needed like client location and kiosk
@@ -93,17 +152,76 @@ def make_user(request):
 
 #autocomplete for clients
 class ClientAutoComplete(autocomplete.Select2QuerySetView):
+    def post(self,request):
+        if self.request.user.is_authenticated:
+            if request.user.groups.filter(name='Partner').exists():
+                client = Client.objects.create(ClientName = request.POST['text'])
+                partner =  Partner.objects.get(PartnerName=request.user)
+                PartnerToClient.objects.create(Client=client,Partner=partner)
+                return http.JsonResponse({
+                'id':client.pk,
+                'text':client.ClientName
+                })
+            elif request.user.groups.filter(name='Admin').exists():
+                client = Client.objects.create(ClientName = request.POST['text'])
+                return http.JsonResponse({
+                'id':client.pk,
+                'text':client.ClientName
+                })
+            else:
+                return http.JsonResponse({'id':-1,
+                'text':'You dont have permission to do that'
+                })
+        else:
+            return http.HttpResponseForbidden()
     def get_queryset(self):
     #add authentication django-autocomplete light .readdocs.io
-        qs = Client.objects.all().order_by("ClientName")
+        print(self.request.user)
+        if self.request.user.groups.filter(name='Partner').exists():
+            clients = PartnerToClient.objects.filter(Partner__PartnerName = self.request.user)
+            qs = Client.objects.filter(pk__in=clients.values('Client')).order_by('ClientName')
+        elif self.request.user.groups.filter(name='Admin').exists():
+            qs = Client.objects.all().order_by("ClientName")
+        elif self.request.user.groups.filter(name='Client').exists():
+            qs = Client.objects.filter(ClientName = self.request.user).order_by('ClientName')
+
         if self.q:
             qs = qs.filter(ClientName__icontains=self.q)
         return qs
 #autocomplete for clients
 class LocationAutoComplete(autocomplete.Select2QuerySetView):
+    def post(self,request):
+        if self.request.user.is_authenticated:
+            reg = re.compile('\d{5}')
+            reg_name = re.compile('(^[a-zA-Z ]*)')
+            z = reg.search(request.POST['text'])
+            if z:
+                name = reg_name.search(request.POST['text']).group(0)
+                try:
+                    loc = Location.objects.get(LocationName = name)
+                except Location.DoesNotExist:
+                    loc = Location.objects.create(Address = z.group(0), LocationName=name)
+                return http.JsonResponse({
+                'id':loc.pk,
+                'text':loc.LocationName
+                })
+            else:
+                print('no zip')
+                return http.JsonResponse({
+                'id':-1,
+                'text':'Add a zipcode'
+                })
     def get_queryset(self):
     #add authentication django-autocomplete light .readdocs.io
-        qs = Location.objects.all().order_by("LocationName")
+        if self.request.user.groups.filter(name='Partner').exists():
+            kiosks = PartnerToKiosk.objects.filter(Partner__PartnerName = self.request.user)
+            print(kiosks)
+            qs = Location.objects.filter(pk__in=kiosks.values('Kiosk__Location') ).order_by("LocationName")
+        elif self.request.user.groups.filter(name='Admin').exists():
+            qs = Location.objects.all().order_by("LocationName")
+        elif self.request.user.groups.filter(name='Client').exists():
+            kiosks = Kiosk.objects.filter(Client__ClientName = self.request.user)
+            qs = Location.objects.filter(pk__in=kiosks.values('Kiosk__Location') ).order_by("LocationName")
         if self.q:
             qs = qs.filter(LocationName__icontains=self.q)
         return qs
@@ -111,11 +229,19 @@ class LocationAutoComplete(autocomplete.Select2QuerySetView):
 class KioskAutoComplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
     #add authentication django-autocomplete light .readdocs.io
-        qs = Kiosk.objects.all().order_by("ID")
+        if self.request.user.groups.filter(name='Partner').exists():
+            kiosks = PartnerToKiosk.objects.filter(Partner__PartnerName = self.request.user)
+            qs = Kiosk.objects.filter(ID__in = kiosks.values('Kiosk')).order_by('ID')
+        elif self.request.user.groups.filter(name='Admin').exists():
+            qs = Kiosk.objects.all().order_by("ID")
+        elif self.request.user.groups.filter(name='Client').exists():
+            qs =  Kiosk.objects.filter(Client__ClientName = self.request.user).order_by('ID')
         if self.q:
             qs = qs.filter(ID__icontains=self.q)
         return qs
 class TypeAutoComplete(autocomplete.Select2QuerySetView):
+    def post(self,request):
+        print(request.POST)
     def get_queryset(self):
     #add authentication django-autocomplete light .readdocs.io
         qs = Catergories.objects.all().order_by("Type")

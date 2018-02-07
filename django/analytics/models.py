@@ -78,7 +78,7 @@ class Time(models.Model):
     Port = models.ForeignKey(Port,related_name='PortToTime',on_delete=models.CASCADE)
     TimeIn = models.DateTimeField(verbose_name = "TimeIn")
     TimeOut = models.DateTimeField(verbose_name = "TimeOut")
-
+    Duration = models.IntegerField(verbose_name= "Duration")
 #Relational Tables
 
 #Match partners with client
