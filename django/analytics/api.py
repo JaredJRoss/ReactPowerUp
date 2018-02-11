@@ -4,7 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from django.db.models import Q
-
+from .filters import *
+import datetime
 # Serializers define the API representation.
 class TimeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -69,21 +70,38 @@ class ClientViewSet(viewsets.ModelViewSet):
 
 class Search(APIView):
     renderer_classes = (JSONRenderer, )
-    queryset = Client.objects.all()
+    queryset = Kiosk.objects.all()
     def get(self,request,format=None):
-        values = []
-        client = Client.objects.get(ClientName=request.GET['user'])
-        kiosk = Kiosk.objects.filter(Client=client)
-        location = Location.objects.get(LocationName='Baltimore')
-        print(Q(kiosk.filter(Location = location)))
-        ids = request.GET.getlist('ID')
-        if ids != []:
-            for i in ids:
-                temp = kiosk.get(ID=i)
-
-        if request.GET.getlist('Past') == 'Day':
-            print(0)
-        return Response(values)
+        arr = []
+        print('User:',request.user)
+        if request.user.groups.filter(name='Admin').exists():
+            qs = Kiosk.objects.all()
+        elif request.user.groups.filter(name='Partner').exists():
+            clients = PartnerToClient.objects.filter(Partner__PartnerName=request.user.username)
+            qs = Kiosk.objects.filter(Client__in = clients.values('Client'))
+        elif request.user.groups.filter(name='Client').exists():
+            qs = Kiosk.objects.filter(Client__ClientName = request.user.username)
+        else:
+            qs = Kiosk.objects.none()
+        print(qs)
+        kioskFilter = KioskFilter(request.GET,qs)
+        for kiosk in kioskFilter.qs:
+            k = {}
+            k['ID'] = kiosk.ID
+            k['Client'] = kiosk.Client.ClientName
+            k['Loc'] = kiosk.Location.LocationName
+            ports = Port.objects.filter(Kiosk = kiosk)
+            times = Time.objects.filter(Port__in = ports)
+            print(times)
+            k['Tot'] = times.count()
+            last = times.latest('TimeOut').TimeOut.replace(tzinfo=None)
+            k['last_update'] = last.strftime("%Y-%m-%d %H:%M:%S")
+            if (datetime.datetime.now().replace(tzinfo=None)-last.replace(tzinfo=None)).days > 50:
+                k['online'] = False
+            else:
+                k['online'] = True
+            arr.append(k)
+        return Response(arr)
 
 
 # class SkillCount(APIView):

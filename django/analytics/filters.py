@@ -18,12 +18,10 @@ class KioskFilter(django_filters.FilterSet):
     queryset=Kiosk.objects.all(),
     widget = autocomplete.ModelSelect2Multiple(url="analytics:kiosk-autocomplete"))
 
-    Type = django_filters.ModelMultipleChoiceFilter(method = 'customType',
-    queryset= Catergories.objects.all())
 
     class Meta:
         model = Kiosk
-        fields = ['Location','Client','ID','Type']
+        fields = ['Location','Client','ID',]
 
     def customType(self,queryset,name,value):
         client = ClientToType.objects.filter(Type__in=value)

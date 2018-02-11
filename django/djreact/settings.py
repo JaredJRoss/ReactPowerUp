@@ -26,7 +26,7 @@ SECRET_KEY = 'y-($z@)bwfp0$_7&ds@tj7%r5e(x)9dyscsawgxd9i=)%1^7ii'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+CSRF_USE_SESSIONS = True
 
 # Application definition
 

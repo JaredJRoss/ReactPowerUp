@@ -3,6 +3,8 @@ from . import views
 from .views import *
 from rest_framework import routers, serializers, viewsets
 from .api import *
+from django.views import generic
+
 
 
 # Routers provide an easy way of automatically determining the URL conf.
@@ -17,6 +19,7 @@ app_name = 'analytics'
 
 urlpatterns=[
     url(r'^upload/$',upload, name='upload',),
+        url(r'^$',mainpage,name='home'),
     url(r'add_user/$',make_user, name='add_user',),
     url(r'^client-autocomplete/$',ClientAutoComplete.as_view(create_field='ClientName'), name='client-autocomplete', ),
     url(r'^location-autocomplete/$',LocationAutoComplete.as_view(create_field='LocationName'), name='location-autocomplete', ),

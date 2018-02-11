@@ -14,6 +14,13 @@ from django import http
 import re
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
+from django.views.decorators.csrf import ensure_csrf_cookie
+
+
+
+@ensure_csrf_cookie
+def mainpage(request):
+    return render(request,'sample_app.html')
 
 #Takes a get request and parses the time in and out of each port kiosk combo
 def upload(request):
@@ -184,7 +191,8 @@ class ClientAutoComplete(autocomplete.Select2QuerySetView):
             qs = Client.objects.all().order_by("ClientName")
         elif self.request.user.groups.filter(name='Client').exists():
             qs = Client.objects.filter(ClientName = self.request.user).order_by('ClientName')
-
+        else:
+            qs = Client.objects.none()
         if self.q:
             qs = qs.filter(ClientName__icontains=self.q)
         return qs
@@ -215,13 +223,14 @@ class LocationAutoComplete(autocomplete.Select2QuerySetView):
     #add authentication django-autocomplete light .readdocs.io
         if self.request.user.groups.filter(name='Partner').exists():
             kiosks = PartnerToKiosk.objects.filter(Partner__PartnerName = self.request.user)
-            print(kiosks)
             qs = Location.objects.filter(pk__in=kiosks.values('Kiosk__Location') ).order_by("LocationName")
         elif self.request.user.groups.filter(name='Admin').exists():
             qs = Location.objects.all().order_by("LocationName")
         elif self.request.user.groups.filter(name='Client').exists():
             kiosks = Kiosk.objects.filter(Client__ClientName = self.request.user)
             qs = Location.objects.filter(pk__in=kiosks.values('Kiosk__Location') ).order_by("LocationName")
+        else:
+            qs = Location.objects.none()
         if self.q:
             qs = qs.filter(LocationName__icontains=self.q)
         return qs
@@ -236,6 +245,8 @@ class KioskAutoComplete(autocomplete.Select2QuerySetView):
             qs = Kiosk.objects.all().order_by("ID")
         elif self.request.user.groups.filter(name='Client').exists():
             qs =  Kiosk.objects.filter(Client__ClientName = self.request.user).order_by('ID')
+        else:
+            qs = Kiosk.objects.none()
         if self.q:
             qs = qs.filter(ID__icontains=self.q)
         return qs
@@ -254,5 +265,4 @@ def search(request):
     query_set = Kiosk.objects.all()
     kioskFilter  = KioskFilter(request.GET,query_set)
     #print(Kiosk.objects.filter(''))
-    print(kioskFilter.qs)
     return render(request,'search.html',{'kioskFilter':kioskFilter})
