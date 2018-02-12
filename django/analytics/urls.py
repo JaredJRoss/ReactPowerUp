@@ -19,7 +19,7 @@ app_name = 'analytics'
 
 urlpatterns=[
     url(r'^upload/$',upload, name='upload',),
-        url(r'^$',mainpage,name='home'),
+    url(r'^$',mainpage,name='home'),
     url(r'add_user/$',make_user, name='add_user',),
     url(r'^client-autocomplete/$',ClientAutoComplete.as_view(create_field='ClientName'), name='client-autocomplete', ),
     url(r'^location-autocomplete/$',LocationAutoComplete.as_view(create_field='LocationName'), name='location-autocomplete', ),
@@ -27,6 +27,7 @@ urlpatterns=[
     url(r'^type-autocomplete/$',TypeAutoComplete.as_view(create_field='Type'), name='type-autocomplete', ),
     url(r'^api/', include(router.urls)),
     url(r'^api/search$', Search.as_view(), name='search'),
+    url(r'^api/dash$', Dashboard.as_view(), name='dash'),
     url(r'kiosk/(?P<pk>\d+)$', kiosk_view, name='kiosk'),
     url(r'search/$',search,name='search')
 

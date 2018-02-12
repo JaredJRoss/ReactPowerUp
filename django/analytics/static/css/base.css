@@ -49,7 +49,7 @@ nav {
 }
 .dropdown-content a:hover {
   color: rgb(255,255, 255);
-  background-color: #00C238; 
+  background-color: #00C238;
 }
 
 
@@ -79,7 +79,7 @@ nav {
   padding: 20px;
   border: 1px solid rgba(0,0,0,0.3);
   min-height: 300px;
-  
+
   background: rgba(0, 0, 0, 0.11);
 
 }
@@ -100,7 +100,7 @@ body{
 }
 .container {
   min-height: calc(100vh - 265px);
-  
+
 }
 .spacing1 {
   height:2rem;
@@ -189,10 +189,109 @@ section{
 
 ::-webkit-scrollbar {
     width: 6px;
-} 
+}
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-} 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
 ::-webkit-scrollbar-thumb {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+#waveformchart svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+#waveformchart {
+	width: 100%;
+	height: 140px;
+	background-color: #333;
+	position: relative;
+	margin-bottom: 20px;
+}
+.axis {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+.axis text {
+	font: 11px sans-serif;
+	fill: #000;
+	stroke: none;
+	font-weight: bold;
+}
+
+.axis line {
+	stroke: #ccc;
+}
+
+.axis path {
+	stroke: #ccc;
+}
+#waveformchart .bar{
+	-ms-transform: scale(1,1); /* IE 9 */
+    -webkit-transform: scale(1,1); /* Safari */
+    transform: scale(1,1);
+}
+
+#waveformchart .bar:hover {
+	height: 100%;
+	-ms-transform: scale(2,100); /* IE 9 */
+    -webkit-transform: scale(2,100); /* Safari */
+    transform: scale(2,100);
+    -ms-transform-origin: 50% 50%; /* IE 9 */
+    -webkit-transform-origin: 50% 50%; /* Chrome, Safari, Opera */
+    transform-origin: 50% 50%;
+}
+
+.bar:hover {
+	fill: #E55;
+}
+
+.dot:hover {
+	fill: #E55;
+}
+
+.area:hover {
+	fill: #E55;
+}
+
+.line {
+	padding: 10px;
+}
+
+.line:hover {
+	stroke: #E55;
+}
+
+.arc path:hover {
+	fill: #E55;
+}
+
+.arc text {
+	font: 11px sans-serif;
+	fill: #000;
+	stroke: none;
+	font-weight: bold;
+}
+
+.tooltip {
+	padding: 3px;
+	border: 2px solid;
+	border-radius: 4px;
+	background-color: #eee;
+	opacity: 0.6;
+	justify-content: center;
+	align-items: center;
+}
+
+.brush .extent {
+  stroke: #000;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+.brush .background {
+  fill: #ddd;
 }

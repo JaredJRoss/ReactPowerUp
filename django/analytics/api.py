@@ -6,6 +6,9 @@ from rest_framework.response import Response
 from django.db.models import Q
 from .filters import *
 import datetime
+from .views import filter_dates
+from django.db.models import Sum
+
 # Serializers define the API representation.
 class TimeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -67,6 +70,60 @@ class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer
 # Serializers define the API representation.
 
+def TypeOfChargePie(ports,times):
+    a = ports.filter(Type='Android')
+    i = ports.filter(Type='IPhone')
+    u = ports.filter(Type='USB-C')
+    o = ports.filter(Type='Other')
+    android = times.filter(Port__in =a)
+    iphone =  times.filter(Port__in =i)
+    usbc =  times.filter(Port__in =u)
+    other =  times.filter(Port__in =o)
+    val = [{'x':'Android','y':android.count()},{'x':'IPhone','y':iphone.count()},{'x':'USB-C','y':usbc.count()},{'x':'Other','y':other.count()}]
+    data={
+        'label':'TypeOfChare',
+        'values':val
+        }
+
+    return data
+def TimeOfDayBar(times):
+    val = []
+    for i in range(9,19):
+        val.append({'x':str(i),'y':times.filter(TimeOut__hour=i).count()})
+
+    data = [{
+    'label':'TimeOfDay',
+    'values':val
+    }]
+    return data
+class Dashboard(APIView):
+    renderer_classes = (JSONRenderer, )
+    queryset = Kiosk.objects.all()
+    def get(self,request,format=None):
+        val = {}
+        print('Request',request.GET)
+        if request.user.groups.filter(name='Admin').exists():
+            qs = Kiosk.objects.all()
+        elif request.user.groups.filter(name='Partner').exists():
+            clients = PartnerToClient.objects.filter(Partner__PartnerName=request.user.username)
+            qs = Kiosk.objects.filter(Client__in = clients.values('Client'))
+        elif request.user.groups.filter(name='Client').exists():
+            qs = Kiosk.objects.filter(Client__ClientName = request.user.username)
+        else:
+            qs = Kiosk.objects.none()
+        kioskFilter = KioskFilter(request.GET,qs)
+        print('Kiosks',kioskFilter.qs)
+        ports = Port.objects.filter(Kiosk__in =kioskFilter.qs)
+        times = Time.objects.filter(Port__in = ports)
+        times = filter_dates(times,request.GET)
+        val['count'] = times.count()
+        try:
+            val['avg'] = times.aggregate(Sum('Duration'))['Duration__sum']/times.count()
+        except TypeError:
+            val['avg'] = 0
+        val['TypeOfCharge'] = TypeOfChargePie(ports,times)
+        val['TimeOfDay'] = TimeOfDayBar(times)
+        return Response(val)
 
 class Search(APIView):
     renderer_classes = (JSONRenderer, )

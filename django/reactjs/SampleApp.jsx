@@ -6,7 +6,7 @@ import SampleAppContainer from "./containers/SampleAppContainer"
 class SampleApp extends React.Component {
   render() {
     return (
-        <SampleAppContainer />
+        <SampleAppContainer user={user}/>
     )
   }
 }

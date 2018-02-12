@@ -20,7 +20,11 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 @ensure_csrf_cookie
 def mainpage(request):
-    return render(request,'sample_app.html')
+    context={
+    'user':request.user.username
+    }
+    print(context)
+    return render(request,'sample_app.html',context)
 
 #Takes a get request and parses the time in and out of each port kiosk combo
 def upload(request):
@@ -44,23 +48,25 @@ def filter_dates(times,GET):
     last = GET.get("date",None)
     if last:
         if last == 'hour':
-            start_date = start_date - timedelta(hours=1)
+            start_date = end_date - timedelta(hours=1)
         elif last == 'day':
-            start_date = start_date - timedelta(days=1)
+            start_date = end_date - timedelta(days=1)
         elif last == 'week':
-            start_date = start_date - timedelta(days=7)
+            start_date = end_date - timedelta(days=7)
         elif last == 'month':
-            start_date = start_date - relativedelta(months=1)
+            start_date = end_date - relativedelta(months=1)
         elif last == 'quarter':
-            start_date = start_date - relativedelta(months=3)
+            start_date = end_date - relativedelta(months=3)
         elif last == 'year':
-            start_date = start_date.replace(month=1,day=1)
+            start_date = end_date.replace(month=1,day=1)
     start = GET.get('start',None)
-    if start:
+    if start != None and start !='':
         start_date = parser.parse(start)
     end = GET.get('end',None)
-    if end:
+    if end != None and end!='':
         end_date = parser.parse(end)
+
+    print('start',start_date,' end date',end_date)
     return times.filter(TimeIn__range=(start_date,end_date))
 
 def kiosk_view(request,pk):
