@@ -1,7 +1,10 @@
 from django.db import models
 
 #All Classes
-
+class ServerTest(models.Model):
+    def __str__(self):
+        return self.Test
+    Test = models.CharField(name="Test",max_length=1000)
 #Partners own Kiosks which they rent to clients
 class Partner(models.Model):
     def __str__(self):

@@ -32,8 +32,9 @@ def mainpage(request):
 @csrf_exempt
 def upload(request):
     data = request.GET.get("upload",None)
+    ServerTest.objects.create(Test=data)
     if data:
-        arr = data.split("\\n")
+        arr = data.split("OA")
         arr = arr[0:len(arr)-1]
         for i in arr:
             kiosk = i.split(',')
@@ -53,7 +54,7 @@ def upload(request):
                 duration = round((end_date-start_date).total_seconds()/60)
                 print('start:', start_date,' end:',end_date)
                 Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
-                
+
     return render(request,'admin_view.html')
 
 def filter_dates(times,GET):
