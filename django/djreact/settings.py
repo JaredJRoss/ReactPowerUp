@@ -25,7 +25,7 @@ SECRET_KEY = 'y-($z@)bwfp0$_7&ds@tj7%r5e(x)9dyscsawgxd9i=)%1^7ii'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['powerup-dev.us-east-1.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['powerup-dev.us-east-1.elasticbeanstalk.com','127.0.0.1']
 CSRF_USE_SESSIONS = True
 
 # Application definition

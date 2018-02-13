@@ -1,8 +1,8 @@
 0 info it worked if it ends with ok
 1 verbose cli [ '/usr/local/n/versions/node/9.4.0/bin/node',
 1 verbose cli   '/usr/bin/npm',
-1 verbose cli   'install',
-1 verbose cli   'package.json' ]
+1 verbose cli   'ls',
+1 verbose cli   'reactjs' ]
 2 info using npm@3.5.2
 3 info using node@v9.4.0
 4 verbose stack Error: Cannot find module 'ansi'
@@ -18,7 +18,7 @@
 4 verbose stack     at Function.Module._load (module.js:505:3)
 5 verbose cwd /home/jared/PowerUp/django
 6 error Linux 4.13.0-32-generic
-7 error argv "/usr/local/n/versions/node/9.4.0/bin/node" "/usr/bin/npm" "install" "package.json"
+7 error argv "/usr/local/n/versions/node/9.4.0/bin/node" "/usr/bin/npm" "ls" "reactjs"
 8 error node v9.4.0
 9 error npm  v3.5.2
 10 error code MODULE_NOT_FOUND
