@@ -14,19 +14,17 @@ config.ip = ip
 // Use webpack dev server
 config.entry = {
   SampleApp: [
-    'webpack-dev-server/client?http://' + ip + ':3000',
-    'webpack/hot/only-dev-server',
+    'webpack-dev-server/client?http://' + ip + ':8000',
     './reactjs/SampleApp',
   ],
   SampleApp2: [
-    'webpack-dev-server/client?http://' + ip + ':3000',
-    'webpack/hot/only-dev-server',
+    'webpack-dev-server/client?http://' + ip + ':8000',
     './reactjs/SampleApp2',
   ]
 }
 
 // override django's STATIC_URL for webpack bundles
-config.output.publicPath = 'http://' + ip + ':3000' + '/assets/bundles/'
+config.output.publicPath = 'http://' + ip + ':8000' + '/static/bundles/local/'
 
 // Add HotModuleReplacementPlugin and BundleTracker plugins
 config.plugins = config.plugins.concat([
