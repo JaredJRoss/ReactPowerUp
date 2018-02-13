@@ -19,11 +19,9 @@ var user = "{{user}}";
 <div id="SampleApp"></div>
 {% render_bundle 'vendors' %}
 {% render_bundle 'SampleApp' %}
-{%csrf_token%}
 <a class="transparent_btn" href="#">Add Partner</a>
-<a class="transparent_btn" href="#">Add Location</a>
-<a class="transparent_btn" href="#">Add Kiosk</a>
-<a class="transparent_btn" href="#">Add Client</a>
+<a class="transparent_btn" href="{%url 'analytics:add_kiosk'%}">Add Kiosk</a>
+
 <div class="spacing1"> </div><div class="spacing1"> </div><div class="spacing1"> </div><div class="spacing1"> </div>
 
 {% endblock %}

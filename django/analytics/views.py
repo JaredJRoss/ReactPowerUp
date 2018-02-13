@@ -14,9 +14,11 @@ from django import http
 import re
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
 
+def login(request):
+    return render(request,'login.html')
 
 @ensure_csrf_cookie
 def mainpage(request):
@@ -27,19 +29,31 @@ def mainpage(request):
     return render(request,'sample_app.html',context)
 
 #Takes a get request and parses the time in and out of each port kiosk combo
+@csrf_exempt
 def upload(request):
-    data = request.GET.get("id",None)
+    data = request.GET.get("upload",None)
     if data:
-        arr = data.split("<CR>")
+        arr = data.split("\\n")
+        arr = arr[0:len(arr)-1]
         for i in arr:
             kiosk = i.split(',')
-            port= kiosk[0]
-            ID = kiosk[1]
-            start = kiosk[2]
-            end = kiosk[3]
-            K = Kiosk.objects.get(ID=ID)
-            p = Port.object.get(Port=int(port), Kiosk = K)
-            print('Kiosk:',K,' Port:',p,' Start:',start," End:",end)
+            ID= kiosk[0]
+            port = kiosk[3]
+            date = kiosk[2]
+            start = kiosk[4]
+            end = kiosk[5]
+            K = Kiosk.objects.get(ID=int(ID))
+            if port != '--':
+                p = Port.objects.get(Port=int(port), Kiosk = K)
+                month = date[0:2]
+                day = date[2:4]
+                year = '20'+date[4:6]
+                start_date = datetime.datetime.strptime(month+day+year+start,'%m%d%Y%H%M%S')
+                end_date = datetime.datetime.strptime(month+day+year+end,'%m%d%Y%H%M%S')
+                duration = round((end_date-start_date).total_seconds()/60)
+                print('start:', start_date,' end:',end_date)
+                Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
+                
     return render(request,'admin_view.html')
 
 def filter_dates(times,GET):
@@ -66,12 +80,12 @@ def filter_dates(times,GET):
     if end != None and end!='':
         end_date = parser.parse(end)
 
-    print('start',start_date,' end date',end_date)
     return times.filter(TimeIn__range=(start_date,end_date))
 
+
+@ensure_csrf_cookie
 def kiosk_view(request,pk):
     if request.user.is_authenticated:
-        print('POST',request.POST)
         kiosk = get_object_or_404(Kiosk, ID=pk)
         client = False
         partner = False
@@ -81,29 +95,12 @@ def kiosk_view(request,pk):
         elif request.user.groups.filter(name='Client').exists():
             client  = request.user.username == kiosk.Client.ClientName
             perm = 'client'
-        else:
+        elif request.user.groups.filter(name='Admin').exists():
             perm='admin'
+        else:
+            print('not authorized')
+
         if client or partner or request.user.groups.filter(name='Admin').exists():
-            port_arr = []
-            port = Port.objects.filter(Kiosk=kiosk)
-            times = Time.objects.filter(Port__in=port)
-            times = filter_dates(times,request.GET)
-            for p in port:
-                try:
-                    temp_time = times.filter(Port= p)
-                    last_update = temp_time.latest('TimeOut').TimeOut.replace(tzinfo=None)
-                    total_count = temp_time.count()
-                    elasped_time =  last_update - datetime.datetime.now().replace(tzinfo=None)
-                    if elasped_time.days < -10:
-                        flag = True
-                    else:
-                        flag = False
-                except Time.DoesNotExist:
-                    last_update = None
-                    total_count = 0
-                    flag = True
-                port_arr.append({'Type':p.Type,'Port':p.Port,'Last_Update':last_update,'Flag':flag,'Total':total_count})
-            print(times.count(),times.aggregate(Sum('Duration'))['Duration__sum'])
             portform = PortForm(request.POST)
             if portform.is_valid():
                 new_port = portform.save(commit=False)
@@ -120,63 +117,76 @@ def kiosk_view(request,pk):
                 print(kiosk)
                 return HttpResponseRedirect(reverse('analytics:kiosk', args=[pk]))
 
+            try:
+                partner2kiosk = PartnerToKiosk.objects.get(Kiosk__ID=pk)
+            except PartnerToKiosk.DoesNotExist:
+                partner2kiosk=None
+
+            partnerform = PartnerToKioskForm(request.POST or None,instance=partner2kiosk)
+            if partnerform.is_valid():
+                try:
+                    partner2kiosk = PartnerToKiosk.objects.get(Kiosk__ID = pk)
+                    partner2kiosk.Partner = partnerform.cleaned_data['Partner']
+                    partner2kiosk.save()
+                except PartnerToKiosk.DoesNotExist:
+                    kiosk2p = Kiosk.objects.get(ID=pk)
+                    PartnerToKiosk.objects.create(Kiosk=kiosk2p,Partner= partnerform.cleaned_data['Partner'])
+
+                return HttpResponseRedirect(reverse('analytics:kiosk', args=[pk]))
+
             context = {
-            'ports':port_arr,
-            'kioskform':kioskform,
-            'portform':portform,
-            'permission':perm,
+                'partnerform':partnerform,
+                'kioskform':kioskform,
+                'portform':portform,
+                'permission':perm,
+                'ID':pk,
             }
             return render(request,'kiosk.html',context)
 #creating everything that is needed like client location and kiosk
-def make_user(request):
-    print(request.POST)
-    client_form = ClientForm(request.POST)
-    if client_form.is_valid():
-        print("Client")
-        User.objects.create_user(request.POST['ClientName'],'','password',is_staff=True)
-        client_form.save()
-        return HttpResponseRedirect(reverse('analytics:add_user'))
-
-    location_form = LocationForm(request.POST)
-    if location_form.is_valid():
-        print('location')
-        print(location_form)
-        location_form.save()
-        return HttpResponseRedirect(reverse('analytics:add_user'))
-    kiosk_form = KioskForm(request.POST)
-    if kiosk_form.is_valid():
-        print('kiosk')
-        kiosk_form.save()
-        return HttpResponseRedirect(reverse('analytics:add_user'))
-    port_form = PortForm(request.POST)
-    if port_form.is_valid():
-        port_form.save()
-        return HttpResponseRedirect(reverse('analytics:add_user'))
-
-    context = {
-    'clientform':client_form,
-    'locationform':location_form,
-    'kioskform':kiosk_form,
-    'portform':port_form,
-    }
-    return render(request, 'new_user.html',context)
+@ensure_csrf_cookie
+def make_kiosk(request):
+    if request.user.is_authenticated:
+        if request.user.groups.filter(name='Client').exists():
+            return HttpResponseRedirect(reverse('analytics:home'))
+        kiosk_form = KioskForm(request.POST or None)
+        if kiosk_form.is_valid():
+            k = kiosk_form.save(commit=False)
+            k.CreatedOn = datetime.datetime.now()
+            if request.user.groups.filter(name='Partner').exists():
+                partner = Partner.objects.get(PartnerName=request.user)
+                p2k = PartnerToKiosk(Kiosk = k, Partner=partner)
+                k.save()
+                p2k.save()
+            else:
+                k.save()
 
 
+            return HttpResponseRedirect(reverse('analytics:home'))
+        context = {
+        'kioskform':kiosk_form,
+        }
+        return render(request, 'new_kiosk.html',context)
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))
 
 #autocomplete for clients
+
 class ClientAutoComplete(autocomplete.Select2QuerySetView):
     def post(self,request):
-        if self.request.user.is_authenticated:
+        print('User',request.user)
+        if request.user.is_authenticated:
             if request.user.groups.filter(name='Partner').exists():
                 client = Client.objects.create(ClientName = request.POST['text'])
                 partner =  Partner.objects.get(PartnerName=request.user)
                 PartnerToClient.objects.create(Client=client,Partner=partner)
+                User.objects.create_user(request.POST['text'],'','password',is_staff=True)
                 return http.JsonResponse({
                 'id':client.pk,
                 'text':client.ClientName
                 })
             elif request.user.groups.filter(name='Admin').exists():
                 client = Client.objects.create(ClientName = request.POST['text'])
+                User.objects.create_user(request.POST['text'],'','password',is_staff=True)
                 return http.JsonResponse({
                 'id':client.pk,
                 'text':client.ClientName
@@ -189,7 +199,6 @@ class ClientAutoComplete(autocomplete.Select2QuerySetView):
             return http.HttpResponseForbidden()
     def get_queryset(self):
     #add authentication django-autocomplete light .readdocs.io
-        print(self.request.user)
         if self.request.user.groups.filter(name='Partner').exists():
             clients = PartnerToClient.objects.filter(Partner__PartnerName = self.request.user)
             qs = Client.objects.filter(pk__in=clients.values('Client')).order_by('ClientName')
@@ -257,13 +266,20 @@ class KioskAutoComplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(ID__icontains=self.q)
         return qs
 class TypeAutoComplete(autocomplete.Select2QuerySetView):
-    def post(self,request):
-        print(request.POST)
     def get_queryset(self):
     #add authentication django-autocomplete light .readdocs.io
         qs = Catergories.objects.all().order_by("Type")
         if self.q:
             qs = qs.filter(Type__icontains=self.q)
+        return qs
+class PartnerAutoComplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if self.request.user.groups.filter(name='Admin').exists():
+            qs = Partner.objects.all().order_by("PartnerName")
+        else:
+            qs = Partner.objects.none()
+        if self.q:
+            qs = qs.filter(PartnerName__icontains=self.q)
         return qs
 
 def search(request):

@@ -6,7 +6,7 @@ import SampleApp2Container from "./containers/SampleApp2Container"
 class SampleApp2 extends React.Component {
   render() {
     return (
-      <SampleApp2Container />
+      <SampleApp2Container kiosk={kiosk}/>
     )
   }
 }

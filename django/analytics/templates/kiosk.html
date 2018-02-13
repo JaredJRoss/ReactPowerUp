@@ -2,6 +2,8 @@
 {% block content %}
 {%load static%}
 {% load widget_tweaks %}
+{% load render_bundle from webpack_loader %}
+
 <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
     <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/select2.css' %}" />
@@ -12,72 +14,20 @@
     <script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/dist/js/select2.full.js' %}"></script>
     <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
     <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+    <script >var kiosk='{{ID}}'</script>
 <section>
-
-    {% if status == "online" %}
-      <h1><img style="margin-top:-5px; height:25px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Green_sphere.svg/256px-Green_sphere.svg.png"/> <span>Kiosk Details</span></h1>
-    {% else %}
-      <h1><img style="margin-top:-5px; height:25px;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Nuvola_apps_krec.svg/256px-Nuvola_apps_krec.svg.png"/> <span>Kiosk Details</span></h1>
-    {% endif %}
-    <div class="spacing1"> </div>
-    <div class= "transparentbox"> </div>
-    <div style= "text-align:center">
-
-    <a style="text-decoration: none;" class="transparent_btn" href="?date=all">All Time</a>
-    <a style="text-decoration: none;" class="transparent_btn" href="?date=year">Last Year</a>
-    <a style="text-decoration: none;" class="transparent_btn" href="?date=quarter">Last Quarter</a>
-    <a style="text-decoration: none;" class="transparent_btn" href="?date=month">Last Month</a>
-    <a style="text-decoration: none;" class="transparent_btn" href="?date=week">Last Week</a>
-    <a style="text-decoration: none;" class="transparent_btn" href="?date=day">Last Day</a>
-    <a style="text-decoration: none;" class="transparent_btn" href="?date=hour">Last Hour</a>
-    <div class="spacing1"> </div>
-    <form action="" method="get">
-      Start Date: <input type="text" name="start">
-      End Date: <input type="text" name="end">
-      <input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input>
-    </form>
+    <div id="SampleApp2"></div>
+    {% render_bundle 'vendors' %}
+    {% render_bundle 'SampleApp2' %}
+    <div style="width:200px">
+    <form action="" method="POST">
+    {% csrf_token %}
+    Add a port:{% render_field portform.Port class="form-control" %}
+    {% render_field portform.Type class="form-control" %}
+    <input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input>
+  </form>
   </div>
     <div class="spacing2"> </div>
-
-
-    <div class="tbl-header">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <thead>
-          <tr>
-            <th>Port</th>
-            <th>Type</th>
-            <th>Total Charges</th>
-            <th>Last Updated</th>
-            <th>Flag</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-    <div class="tbl-content">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tbody>
-          {%for p in ports%}
-          <tr>
-            <td>{{p.Port}}</td>
-            <td>{{p.Type}}</td>
-            <td>{{p.Total}}</td>
-            <td>{{p.Last_Update}}</td>
-            <td>{{p.Flag}}</td>
-
-          </tr>
-          {%endfor%}
-          <tr>
-            <form action="" method="POST">
-              {% csrf_token %}
-            <td>{% render_field portform.Port class="form-control" %}</td>
-            <td>{% render_field portform.Type class="form-control" %}</td>
-            <td><input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input></td>
-          </form>
-
-          </tr>
-        </tbody>
-      </table>
-    </div>
     <div class="spacing1"> </div>
     <div class="spacing1"> </div>
     <form method = "POST" action="">
@@ -95,9 +45,16 @@
     {%if permission == 'admin'%}
     <h5> Admin Options </h5>
     <div class="spacing1"> </div>
+    <form method="POST" action='#'>
+      {% csrf_token %}
+      Partner: {%render_field partnerform.Partner class="form-control" %}
+      <input style="text-decoration: none;" type= "submit"class="transparent_btn" value="Assign To Partner" ></input>
+
+    </form>
+    <div class="spacing1"> </div>
+
     <a style="text-decoration: none;" class="transparent_btn" href="#">Ping</a>
     <a style="text-decoration: none;" class="transparent_btn" href="#">Reboot</a>
-    <a style="text-decoration: none;" class="transparent_btn" href="#">Assign (To Partner)</a>
     {%endif%}
 
 

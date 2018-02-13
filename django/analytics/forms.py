@@ -24,7 +24,13 @@ class KioskForm(forms.ModelForm):
         'Location':autocomplete.ModelSelect2(url='analytics:location-autocomplete')
         }
 
-
+class PartnerToKioskForm(forms.ModelForm):
+    class Meta:
+        model = PartnerToKiosk
+        fields= ('Partner',)
+        widgets= {
+        'Partner':autocomplete.ModelSelect2(url='analytics:partner-autocomplete'),
+        }
 class PortForm(forms.ModelForm):
     class Meta:
         model = Port

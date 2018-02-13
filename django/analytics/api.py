@@ -89,8 +89,7 @@ def TypeOfChargePie(ports,times):
 def TimeOfDayBar(times):
     val = []
     for i in range(9,19):
-        val.append({'x':str(i),'y':times.filter(TimeOut__hour=i).count()})
-
+        val.append({'x':datetime.datetime.now().replace(hour=i).time().strftime("%I%p"),'y':times.filter(TimeOut__hour=i).count()})
     data = [{
     'label':'TimeOfDay',
     'values':val
@@ -101,7 +100,6 @@ class Dashboard(APIView):
     queryset = Kiosk.objects.all()
     def get(self,request,format=None):
         val = {}
-        print('Request',request.GET)
         if request.user.groups.filter(name='Admin').exists():
             qs = Kiosk.objects.all()
         elif request.user.groups.filter(name='Partner').exists():
@@ -112,7 +110,6 @@ class Dashboard(APIView):
         else:
             qs = Kiosk.objects.none()
         kioskFilter = KioskFilter(request.GET,qs)
-        print('Kiosks',kioskFilter.qs)
         ports = Port.objects.filter(Kiosk__in =kioskFilter.qs)
         times = Time.objects.filter(Port__in = ports)
         times = filter_dates(times,request.GET)
@@ -125,6 +122,49 @@ class Dashboard(APIView):
         val['TimeOfDay'] = TimeOfDayBar(times)
         return Response(val)
 
+class KioskDetails(APIView):
+    renderer_classes = (JSONRenderer, )
+    queryset = Kiosk.objects.all()
+    def get(self,request,format=None):
+
+        print('request',request.GET)
+        partner = False
+        client = False
+        admin = False
+        kID = request.GET.get('ID',None)
+        kiosk = Kiosk.objects.get(ID=kID)
+        if request.user.groups.filter(name='Partner').exists():
+            partner = PartnerToKiosk.objects.get(Partner__PartnerName = request.user, Kiosk= kiosk)
+        elif request.user.groups.filter(name='Client').exists():
+            client  = request.user.username == kiosk.Client.ClientName
+        elif request.user.groups.filter(name='Admin').exists():
+            admin = True
+        else:
+            print('not authorized')
+        if admin or partner or client:
+            online = False
+            port_arr = []
+            port = Port.objects.filter(Kiosk=kiosk)
+            times = Time.objects.filter(Port__in=port)
+            times = filter_dates(times,request.GET)
+            for p in port:
+                try:
+                    temp_time = times.filter(Port= p)
+                    last_update = temp_time.latest('TimeOut').TimeOut.replace(tzinfo=None)
+                    total_count = temp_time.count()
+                    elasped_time =  last_update - datetime.datetime.now().replace(tzinfo=None)
+                    if elasped_time.days < -20:
+                        flag = True
+                    else:
+                        flag = False
+                        online = True
+                except Time.DoesNotExist:
+                    last_update = None
+                    total_count = 0
+                    flag = True
+                port_arr.append({'Type':p.Type,'Port':p.Port,'Last_Update':last_update,'Flag':flag,'Total':total_count})
+        return Response({'ports':port_arr,'online':online})
+        
 class Search(APIView):
     renderer_classes = (JSONRenderer, )
     queryset = Kiosk.objects.all()
@@ -151,12 +191,16 @@ class Search(APIView):
             times = Time.objects.filter(Port__in = ports)
             print(times)
             k['Tot'] = times.count()
-            last = times.latest('TimeOut').TimeOut.replace(tzinfo=None)
-            k['last_update'] = last.strftime("%Y-%m-%d %H:%M:%S")
-            if (datetime.datetime.now().replace(tzinfo=None)-last.replace(tzinfo=None)).days > 50:
+            try:
+                last = times.latest('TimeOut').TimeOut.replace(tzinfo=None)
+                k['last_update'] = last.strftime("%Y-%m-%d %H:%M:%S")
+                if (datetime.datetime.now().replace(tzinfo=None)-last.replace(tzinfo=None)).days > 50:
+                    k['online'] = False
+                else:
+                    k['online'] = True
+            except Time.DoesNotExist:
+                k['last_update'] = None
                 k['online'] = False
-            else:
-                k['online'] = True
             arr.append(k)
         return Response(arr)
 
