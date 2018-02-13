@@ -31,8 +31,11 @@ def mainpage(request):
 #Takes a get request and parses the time in and out of each port kiosk combo
 @csrf_exempt
 def upload(request):
+    test = ''
+    for key, value in request.GET.items():
+        test = test+' Key:'+key+' Value:' + value
     data = request.GET.get("upload",None)
-    ServerTest.objects.create(Test=data)
+    ServerTest.objects.create(Test=test)
     if data:
         arr = data.split("OA")
         arr = arr[0:len(arr)-1]
