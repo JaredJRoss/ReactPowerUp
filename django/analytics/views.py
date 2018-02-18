@@ -23,11 +23,14 @@ def login(request):
 
 @ensure_csrf_cookie
 def mainpage(request):
-    context={
-    'user':request.user.username
-    }
-    print(context)
-    return render(request,'sample_app.html',context)
+    if request.user.is_authenticated:
+        context={
+        'user':request.user.username
+        }
+        print(context)
+        return render(request,'sample_app.html',context)
+    else:
+        return HttpResponseRedirect(reverse('analytics:login'))
 
 #Takes a get request and parses the time in and out of each port kiosk combo
 @csrf_exempt
@@ -58,8 +61,7 @@ def upload(request):
                 duration = round((end_date-start_date).total_seconds()/60)
                 print('start:', start_date,' end:',end_date)
                 Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
-    print('here')
-    return HttpResponse(status=200)
+    return 200
 
 def filter_dates(times,GET):
     start_date = datetime.datetime.now().replace(year=2015)
