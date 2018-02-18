@@ -15,6 +15,7 @@ import re
 from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from django.http import HttpResponse
 
 
 def login(request):
@@ -32,9 +33,9 @@ def mainpage(request):
 @csrf_exempt
 def upload(request):
     test = ''
-    for key, value in request.GET.items():
+    for key, value in request.POST.items():
         test = test+' Key:'+key+' Value:' + value
-    data = request.GET.get("upload",None)
+    data = request.POST.get("upload",None)
     ServerTest.objects.create(Test=test)
     if data:
         arr = data.split("OA")
@@ -57,8 +58,8 @@ def upload(request):
                 duration = round((end_date-start_date).total_seconds()/60)
                 print('start:', start_date,' end:',end_date)
                 Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
-
-    return render(request,'admin_view.html')
+    print('here')
+    return HttpResponse(status=200)
 
 def filter_dates(times,GET):
     start_date = datetime.datetime.now().replace(year=2015)
