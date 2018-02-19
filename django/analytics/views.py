@@ -38,6 +38,9 @@ def upload(request):
     test = ''
     for key, value in request.POST.items():
         test = test+' Key:'+key+' Value:' + value
+    if request.method == 'POST':
+        test = test + 'POST:'+request.body
+
     data = request.POST.get("upload",None)
     ServerTest.objects.create(Test=test)
     if data:
@@ -61,7 +64,7 @@ def upload(request):
                 duration = round((end_date-start_date).total_seconds()/60)
                 print('start:', start_date,' end:',end_date)
                 Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
-    return 200
+    return HttpResponse(status=200)
 
 def filter_dates(times,GET):
     start_date = datetime.datetime.now().replace(year=2015)
