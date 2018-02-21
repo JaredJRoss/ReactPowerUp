@@ -54,19 +54,33 @@ def upload(request):
             end = kiosk[5]
             try:
                 K = Kiosk.objects.get(ID=int(ID))
-                print(K)
                 if port != '--':
-                    p = Port.objects.get(Port=int(port), Kiosk = K)
+                    try:
+                        p = Port.objects.get(Port=int(port), Kiosk = K)
+                    except Port.DoesNotExist:
+                        p = Port.objects.create(Port=int(port), Kiosk=K, Type='Other')
+
                     month = date[0:2]
                     day = date[2:4]
                     year = '20'+date[4:6]
                     start_date = datetime.datetime.strptime(month+day+year+start,'%m%d%Y%H%M%S')
                     end_date = datetime.datetime.strptime(month+day+year+end,'%m%d%Y%H%M%S')
                     duration = round((end_date-start_date).total_seconds()/60)
-                    print('start:', start_date,' end:',end_date)
                     Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
             except Kiosk.DoesNotExist:
-                return HttpResponse("Kiosk does not exist")
+                client = Client.objects.get(ClientName="None")
+                location = Location.objects.get(LocationName="None")
+                K = Kiosk.objects.create(ID=int(ID), Client =client, CreatedOn=datetime.datetime.now(),Location=location)
+                if port !='--':
+                    p = Port.objects.create(Port=int(port), Kiosk=K,Type='Other')
+                    month = date[0:2]
+                    day = date[2:4]
+                    year = '20'+date[4:6]
+                    start_date = datetime.datetime.strptime(month+day+year+start,'%m%d%Y%H%M%S')
+                    end_date = datetime.datetime.strptime(month+day+year+end,'%m%d%Y%H%M%S')
+                    duration = round((end_date-start_date).total_seconds()/60)
+                    Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
+                return HttpResponse("New kiosk made")
     return HttpResponse(status=200)
 
 def filter_dates(times,GET):

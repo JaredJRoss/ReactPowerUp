@@ -68,7 +68,7 @@ class Port(models.Model):
         ('USB-C', 'USB-C'),
         ('Other','Other')
     )
-    Port = models.IntegerField(verbose_name="Port", primary_key=True)
+    Port = models.IntegerField(verbose_name="Port")
     Kiosk = models.ForeignKey(Kiosk,related_name='KioskToPort',on_delete=models.CASCADE)
     Type = models.CharField(verbose_name = "Type", max_length=20, choices=Type_Of_Charger, default ='Other')
 
