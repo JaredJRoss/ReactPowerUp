@@ -36,16 +36,15 @@ def mainpage(request):
 @csrf_exempt
 def upload(request):
     test = ''
-    for key, value in request.POST.items():
-        test = test+' Key:'+key+' Value:' + value
     if request.method == 'POST':
-        test = test + 'POST:'+request.body
-
-    data = request.POST.get("upload",None)
+        test = test + 'POST:'+request.body.decode('utf-8')
+    data = request.body.decode('utf-8')
+    print("data ",data)
     ServerTest.objects.create(Test=test)
     if data:
-        arr = data.split("OA")
-        arr = arr[0:len(arr)-1]
+        arr = data.split("%")
+        arr = arr[1:]
+        print("arr ",arr)
         for i in arr:
             kiosk = i.split(',')
             ID= kiosk[0]
@@ -53,17 +52,21 @@ def upload(request):
             date = kiosk[2]
             start = kiosk[4]
             end = kiosk[5]
-            K = Kiosk.objects.get(ID=int(ID))
-            if port != '--':
-                p = Port.objects.get(Port=int(port), Kiosk = K)
-                month = date[0:2]
-                day = date[2:4]
-                year = '20'+date[4:6]
-                start_date = datetime.datetime.strptime(month+day+year+start,'%m%d%Y%H%M%S')
-                end_date = datetime.datetime.strptime(month+day+year+end,'%m%d%Y%H%M%S')
-                duration = round((end_date-start_date).total_seconds()/60)
-                print('start:', start_date,' end:',end_date)
-                Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
+            try:
+                K = Kiosk.objects.get(ID=int(ID))
+                print(K)
+                if port != '--':
+                    p = Port.objects.get(Port=int(port), Kiosk = K)
+                    month = date[0:2]
+                    day = date[2:4]
+                    year = '20'+date[4:6]
+                    start_date = datetime.datetime.strptime(month+day+year+start,'%m%d%Y%H%M%S')
+                    end_date = datetime.datetime.strptime(month+day+year+end,'%m%d%Y%H%M%S')
+                    duration = round((end_date-start_date).total_seconds()/60)
+                    print('start:', start_date,' end:',end_date)
+                    Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
+            except Kiosk.DoesNotExist:
+                return HttpResponse("Kiosk does not exist")
     return HttpResponse(status=200)
 
 def filter_dates(times,GET):
