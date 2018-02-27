@@ -44,12 +44,20 @@ export default class Dashboard extends React.Component {
       }
     handleDate = (date)=>(event)=>{
       this.props.onUpdate(date,this.state.Start,this.state.End)
-      fetch('/api/dash?'+this.props.search_terms+'&date='+date+'&start='+this.state.Start+'&end='+this.state.End,{
+      if(date == ''){
+      fetch('/api/dash?'+this.props.search_terms+'&start='+this.state.Start+'&end='+this.state.End,{
         credentials:'include'
       }).then(function(response){
         return response.json()
       }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg}));
-
+      }
+      else{
+        fetch('/api/dash?'+this.props.search_terms+'&date='+date,{
+          credentials:'include'
+        }).then(function(response){
+          return response.json()
+        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg}));
+      }
       this.setState({date:date})
     }
     render() {
