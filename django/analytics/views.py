@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.exceptions import ImproperlyConfigured
 import datetime
 import dateutil
@@ -16,6 +16,31 @@ from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.http import HttpResponse
+
+
+def edit_kiosk(request,pk):
+    if request.user.is_authenticated:
+        kiosk = Kiosk.objects.get(ID=pk)
+        kioskform = KioskForm(request.POST or None, instance = kiosk)
+        if kioskform.is_valid():
+            kioskform.save()
+            return HttpResponseRedirect(reverse('analytics:home'))
+        context ={
+        'kioskform':kioskform,
+        }
+        return render(request,'edit_kiosk.html',context)
+
+def edit_port(request,pk):
+    if request.user.is_authenticated:
+        port = Port.objects.get(pk=pk)
+        portform = PortForm(request.POST or None, instance = port)
+        if portform.is_valid():
+            portform.save()
+            return HttpResponseRedirect(reverse('analytics:kiosk', args=[port.Kiosk.ID]))
+        context ={
+        'portform':portform,
+        }
+        return render(request,'edit_port.html',context)
 
 
 def login(request):
@@ -169,7 +194,23 @@ def kiosk_view(request,pk):
                 'ID':pk,
             }
             return render(request,'kiosk.html',context)
-#creating everything that is needed like client location and kiosk
+
+#creating everything that is needed like client location partner and kiosk
+@ensure_csrf_cookie
+def make_partner(request):
+    if request.user.is_authenticated and request.user.groups.filter(name='Admin').exists():
+        partnerform = PartnerForm(request.POST or None)
+        if partnerform.is_valid():
+            partner = partnerform.save()
+            myuser = User.objects.create_user(partner.PartnerName,'','password',is_staff=True)
+            group =  Group.objects.get(name='Partner')
+            group.user_set.add(myuser)
+            return HttpResponseRedirect(reverse('analytics:home'))
+        return render(request,'new_partner.html',{'partnerform':partnerform})
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))
+
+
 @ensure_csrf_cookie
 def make_kiosk(request):
     if request.user.is_authenticated:
@@ -206,14 +247,18 @@ class ClientAutoComplete(autocomplete.Select2QuerySetView):
                 client = Client.objects.create(ClientName = request.POST['text'])
                 partner =  Partner.objects.get(PartnerName=request.user)
                 PartnerToClient.objects.create(Client=client,Partner=partner)
-                User.objects.create_user(request.POST['text'],'','password',is_staff=True)
+                myuser = User.objects.create_user(request.POST['text'],'','password',is_staff=True)
+                group =  Group.objects.get(name='Client')
+                group.user_set.add(myuser)
                 return http.JsonResponse({
                 'id':client.pk,
                 'text':client.ClientName
                 })
             elif request.user.groups.filter(name='Admin').exists():
                 client = Client.objects.create(ClientName = request.POST['text'])
-                User.objects.create_user(request.POST['text'],'','password',is_staff=True)
+                myuser = User.objects.create_user(request.POST['text'],'','password',is_staff=True)
+                group =  Group.objects.get(name='Client')
+                group.user_set.add(myuser)
                 return http.JsonResponse({
                 'id':client.pk,
                 'text':client.ClientName

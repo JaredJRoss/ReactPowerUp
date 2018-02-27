@@ -133,7 +133,9 @@ a:visited {
 	background-color: #00C238;
 	color: #FFF;
 }
-
+.form-control{
+  width:400px;
+}
 /* admin_view table css */
 /* credit to https://codepen.io/nikhil8krishnan/pen/WvYPvv for table template */
 h1{

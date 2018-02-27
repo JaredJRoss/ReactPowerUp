@@ -16,9 +16,14 @@
 
     <form method="POST" class="post-form">
       {% csrf_token %}
-      ID: {%render_field kioskform.ID class="form-control" %}
+      ID: {%render_field kioskform.ID class="form-control" style="display:inline-block"%}
+      <div class='spacing1'></div>
       Client: {%render_field kioskform.Client class="form-control" %}
+      <div class='spacing1'></div>
+
       Location: {% render_field kioskform.Location class="form-control" %}
+      <div class='spacing1'></div>
+
       <div class='spacing1'></div>
       <button type = "submit">Add a New Kiosk</button>
     </form>

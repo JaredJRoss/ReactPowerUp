@@ -2,6 +2,12 @@ from django import forms
 from .models import *
 from dal import autocomplete
 
+
+class PartnerForm(forms.ModelForm):
+    class Meta:
+        model = Partner
+        fields = '__all__'
+
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client

@@ -18,7 +18,7 @@ var user = "{{user}}";
 {% render_bundle 'vendors' %}
 {% render_bundle 'SampleApp' %}
 
-<a class="transparent_btn" href="#">Add Partner</a>
+<a class="transparent_btn" href="{%url 'analytics:add_partner'%}">Add Partner</a>
 <a class="transparent_btn" href="{%url 'analytics:add_kiosk'%}">Add Kiosk</a>
 
 <div class="spacing1"> </div><div class="spacing1"> </div><div class="spacing1"> </div><div class="spacing1"> </div>

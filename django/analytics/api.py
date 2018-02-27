@@ -162,9 +162,9 @@ class KioskDetails(APIView):
                     last_update = None
                     total_count = 0
                     flag = True
-                port_arr.append({'Type':p.Type,'Port':p.Port,'Last_Update':last_update,'Flag':flag,'Total':total_count})
+                port_arr.append({'pk':p.pk,'Type':p.Type,'Port':p.Port,'Last_Update':last_update,'Flag':flag,'Total':total_count})
         return Response({'ports':port_arr,'online':online})
-        
+
 class Search(APIView):
     renderer_classes = (JSONRenderer, )
     queryset = Kiosk.objects.all()

@@ -1,6 +1,8 @@
 import React from "react"
 import BarChart from 'react-d3-components/lib/BarChart'
 import PieChart from 'react-d3-components/lib/PieChart'
+import Datetime from "react-datetime"
+
 export default class Dashboard extends React.Component {
     constructor(props){
       super(props);
@@ -27,10 +29,11 @@ export default class Dashboard extends React.Component {
       }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg}));
     }
     HandleCustomEnd(event){
-      this.setState({End:event.target.value})
+      console.log(event)
+      this.setState({End:event.format("MM/DD/YYYY HH:mm:ss")})
     }
     HandleCustomStart(event){
-      this.setState({Start:event.target.value})
+      this.setState({Start:event.format("MM/DD/YYYY HH:mm:ss")})
     }
 
       tooltipBar = function(x,y0,y,total){
@@ -101,9 +104,13 @@ export default class Dashboard extends React.Component {
         <a onClick ={this.handleDate('day')} style={{text_decoration:"none"}} className="transparent_btn">Last Day</a>
         <a onClick ={this.handleDate('hour')} style={{text_decoration:"none"}} className="transparent_btn">Last Hour</a>
         <div className="spacing1"> </div>
-          Start Date: <input type="text" value = {this.state.Start} onChange={this.HandleCustomStart} name="start"></input>   &nbsp;   &nbsp;
-          End Date: <input type="text" value = {this.state.End} onChange={this.HandleCustomEnd}name="end"></input>
-          <input style={{text_decoration:"none"}} onClick={this.handleDate('')} type= "submit"className="transparent_btn" ></input>
+          Start Date: <Datetime onChange={this.HandleCustomStart} inputProps={{name:"start"}}/>
+          <div className="spacing1"> </div>
+          End Date: <Datetime onChange={this.HandleCustomEnd} inputProps={{name:"end"}}/>
+          <div className="spacing1"> </div>
+
+          <input style={{text_decoration:"none"}} onClick={this.handleDate('')} value ={"Submit Custom Date"}type= "submit"className="transparent_btn" ></input>
+
         <div className="spacing1"> </div>
         </div>
       </div>

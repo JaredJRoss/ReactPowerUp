@@ -4,6 +4,7 @@ import DjangoCSRFToken from 'django-react-csrftoken'
 import BarChart from 'react-d3-components/lib/BarChart'
 import PieChart from 'react-d3-components/lib/PieChart'
 import Dashboard from '../components/Dashboard'
+require('react-datetime');
 export default class SampleAppContainer extends React.Component {
   constructor(props){
     super(props);
@@ -105,6 +106,7 @@ export default class SampleAppContainer extends React.Component {
                   <th>Location</th>
                   <th>Last Charge</th>
                   <th>Total Charge</th>
+                  <th>Action</th>
                 </tr>
               </thead>
             </table>
@@ -123,6 +125,7 @@ export default class SampleAppContainer extends React.Component {
                   <td>{k.Loc}</td>
                   <td>{k.last_update}</td>
                   <td>{k.Tot}</td>
+                  <td> <a href={"/edit_kiosk/"+k.ID} style={{text_decoration:"none"}} className="transparent_btn" >Edit</a></td>
                   </tr>
               )}
               </tbody>

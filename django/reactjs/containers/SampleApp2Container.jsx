@@ -1,5 +1,6 @@
 import React from "react"
 import Dashboard from "../components/Dashboard"
+import Datetime from "react-datetime"
 
 export default class SampleApp2Container extends React.Component {
   constructor(props){
@@ -43,6 +44,7 @@ export default class SampleApp2Container extends React.Component {
               <th>Total Charges</th>
               <th>Last Updated</th>
               <th>Flag</th>
+              <th>Action</th>
             </tr>
           </thead>
         </table>
@@ -52,18 +54,22 @@ export default class SampleApp2Container extends React.Component {
           <tbody>
           {this.state.ports.map(p=>
             <tr key = {p.Port}>
-            <td>{p.Port}</td>
-            <td>{p.Type}</td>
-            <td>{p.Total}</td>
-            <td>{p.Last_Update}</td>
-            <td>{
-            p.Flag ? <img style={{height:15}} src="https://publicdomainvectors.org/photos/HirnlichtspieleRedFlag.png"/>:''}
-            </td>
+              <td>{p.Port}</td>
+              <td>{p.Type}</td>
+              <td>{p.Total}</td>
+              <td>{p.Last_Update}</td>
+              <td>{
+              p.Flag ? <img style={{height:15}} src="https://publicdomainvectors.org/photos/HirnlichtspieleRedFlag.png"/>:''}
+              </td>
+              <td> <a href={"/edit_port/"+p.pk} style={{text_decoration:"none"}} className="transparent_btn" >Edit</a>
+              </td>
             </tr>
           )}
           </tbody>
         </table>
+
       </div>
+
       </div>
     )
   }

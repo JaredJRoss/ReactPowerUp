@@ -18,14 +18,13 @@ html {
 }
 body{
   padding-top: 70px;
-  background: -webkit-linear-gradient(left, #00C238, ##4CD473
-);
-  background: linear-gradient(to right, #00C238, #4CD473);
+  background: -webkit-linear-gradient(left, #017f25, #2b7540);
+  background: linear-gradient(to right, #017f25, #2b7540);
   font-family: 'Roboto', sans-serif;
 }
 .container {
   min-height: calc(100vh - 265px);
-  
+
 }
 .spacing1 {
   height:2rem;
@@ -38,8 +37,8 @@ body{
   position:center;
 	display: inline-block;
 	padding: 10px 14px;
-	color: #00C238;
-	border: solid #00C238;
+	color: #017f25;
+	border: solid #017f25;
   border-width: 1px;
 	text-decoration: none;
 	font-size: 14px;
@@ -52,10 +51,10 @@ body{
 	cursor: pointer;
 }
 a:visited {
-  color: #00C238;
+  color: #017f25;
 }
 .transparent_btn:hover {
-	background-color: #00C238;
+	background-color: #017f25;
 	color: #FFF;
 }
 
@@ -81,7 +80,7 @@ h1{
 
   background: #FFFFFF;
   max-width: 360px;
-  
+
   padding: 45px;
   text-align: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
@@ -101,7 +100,7 @@ h1{
   font-family: "Roboto", sans-serif;
   text-transform: uppercase;
   outline: 0;
-  background: #00C238;
+  background: #017f25;
   width: 100%;
   border: 0;
   padding: 15px;
