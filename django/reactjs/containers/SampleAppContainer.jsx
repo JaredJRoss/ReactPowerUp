@@ -117,8 +117,8 @@ export default class SampleAppContainer extends React.Component {
               {this.state.kiosks.map(k=>
                   <tr key={k.ID}>
                   <td>{k.online ?
-                  <img style={{height:15}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Green_sphere.svg/256px-Green_sphere.svg.png"/>
-                  :<img style={{height:15}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Nuvola_apps_krec.svg/256px-Nuvola_apps_krec.svg.png"/>}</td>
+                  <img style={{height:15}} src="/static/images/Green_sphere.png"/>
+                  :<img style={{height:15}} src="/static/images/Red_sphere.png"/>}</td>
                   <td><a href ={'/kiosk/'+k.ID}>{k.ID}</a></td>
                   <td>{k.Client}</td>
                   <td>{k.Loc}</td>

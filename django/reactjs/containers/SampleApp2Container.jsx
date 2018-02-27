@@ -28,8 +28,8 @@ export default class SampleApp2Container extends React.Component {
       <div name="Dashboard">
       {
         this.state.online ?
-        <h1><img style={{height:'25px'}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Green_sphere.svg/256px-Green_sphere.svg.png"/> <span>Kiosk {this.props.kiosk} Details</span></h1>
-        :<h1><img style={{height:'25px'}} src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Nuvola_apps_krec.svg/256px-Nuvola_apps_krec.svg.png"/> <span>Kiosk  {this.props.kiosk} Details</span></h1>
+        <h1><img style={{height:'25px'}} src="/static/images/Green_sphere.png"/> <span>Kiosk {this.props.kiosk} Details</span></h1>
+        :<h1><img style={{height:'25px'}} src="/static/images/Red_sphere.png"/> <span>Kiosk  {this.props.kiosk} Details</span></h1>
       }
 
       <div class="spacing1"> </div>
@@ -59,7 +59,7 @@ export default class SampleApp2Container extends React.Component {
               <td>{p.Total}</td>
               <td>{p.Last_Update}</td>
               <td>{
-              p.Flag ? <img style={{height:15}} src="https://publicdomainvectors.org/photos/HirnlichtspieleRedFlag.png"/>:''}
+              p.Flag ? <img style={{height:15}} src="/static/images/RedFlag.png"/>:''}
               </td>
               <td> <a href={"/edit_port/"+p.pk} style={{text_decoration:"none"}} className="transparent_btn" >Edit</a>
               </td>
