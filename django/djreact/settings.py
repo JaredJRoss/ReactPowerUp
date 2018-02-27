@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['.elasticbeanstalk.com','127.0.0.1']
 CSRF_USE_SESSIONS = True
-
+CSRF_COOKIE_HTTPONLY =False
 # Application definition
 
 INSTALLED_APPS = [
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'widget_tweaks',
     'django_filters',
+    
 ]
 
 MIDDLEWARE = [

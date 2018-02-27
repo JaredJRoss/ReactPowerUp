@@ -17,6 +17,48 @@ from django.db.models import Sum
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.http import HttpResponse
 
+@ensure_csrf_cookie
+def edit_client(request):
+    print(request.POST)
+    if request.user.is_authenticated and (request.user.groups.filter(name='Admin').exists() or request.user.groups.filter(name='Partner').exists()):
+        form = False
+        query_set = Kiosk.objects.none()
+        kioskFilter  = KioskFilter(request.GET,query_set)
+        print(request.POST)
+        clientform = ClientForm(request.POST or None)
+        new_C_name = request.POST.get('ClientName',None)
+        new_P_name = request.POST.get('PartnerName',None)
+        new_L_name =  request.POST.get('LocationName',None)
+        new_address =  request.POST.get('Address',None)
+        client = request.POST.get('Client',None)
+        location = request.POST.get('Location',None)
+        partner =  request.POST.get('Partner',None)
+        if new_C_name and client:
+            c = Client.objects.get(pk=client)
+            c.ClientName = new_C_name
+            c.save()
+            form = True
+        if new_P_name and partner:
+            p = Partner.objects.get(pk=partner)
+            p.PartnerName = new_P_name
+            p.save()
+            form = True
+        if new_L_name and location:
+            l = Location.objects.get(pk=location)
+            l.LocationName = new_L_name
+            if new_address:
+                l.Address = new_address
+            l.save()
+            form = True
+        if form:
+            HttpResponseRedirect(reverse('analytics:edit_CPL'))
+        context ={
+        'clientform':clientform,
+        'filter':kioskFilter,
+        }
+        return render(request,'edit_CPL.html',context)
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))
 
 def edit_kiosk(request,pk):
     if request.user.is_authenticated:
@@ -29,6 +71,9 @@ def edit_kiosk(request,pk):
         'kioskform':kioskform,
         }
         return render(request,'edit_kiosk.html',context)
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))
+
 
 def edit_port(request,pk):
     if request.user.is_authenticated:
@@ -142,10 +187,10 @@ def kiosk_view(request,pk):
         client = False
         partner = False
         if request.user.groups.filter(name='Partner').exists():
-            partner = PartnerToKiosk.objects.get(Partner__PartnerName = request.user, Kiosk= kiosk)
+            partner = PartnerToKiosk.objects.get(Partner__User = request.user, Kiosk= kiosk)
             perm = 'partner'
         elif request.user.groups.filter(name='Client').exists():
-            client  = request.user.username == kiosk.Client.ClientName
+            client  = request.user == kiosk.Client.User
             perm = 'client'
         elif request.user.groups.filter(name='Admin').exists():
             perm='admin'
@@ -177,8 +222,15 @@ def kiosk_view(request,pk):
             partnerform = PartnerToKioskForm(request.POST or None,instance=partner2kiosk)
             if partnerform.is_valid():
                 try:
+                    print('Changing')
                     partner2kiosk = PartnerToKiosk.objects.get(Kiosk__ID = pk)
                     partner2kiosk.Partner = partnerform.cleaned_data['Partner']
+                    kiosk = Kiosk.objects.get(ID=pk)
+                    kiosk.Client = Client.objects.get(ClientName="None")
+                    kiosk.Location = Location.objects.get(LocationName="None")
+                    print('Location')
+                    print("Kiosk ",kiosk)
+                    kiosk.save()
                     partner2kiosk.save()
                 except PartnerToKiosk.DoesNotExist:
                     kiosk2p = Kiosk.objects.get(ID=pk)
@@ -201,10 +253,12 @@ def make_partner(request):
     if request.user.is_authenticated and request.user.groups.filter(name='Admin').exists():
         partnerform = PartnerForm(request.POST or None)
         if partnerform.is_valid():
-            partner = partnerform.save()
+            partner = partnerform.save(commit = False)
             myuser = User.objects.create_user(partner.PartnerName,'','password',is_staff=True)
+            partner.User = myuser
             group =  Group.objects.get(name='Partner')
             group.user_set.add(myuser)
+            partner.save()
             return HttpResponseRedirect(reverse('analytics:home'))
         return render(request,'new_partner.html',{'partnerform':partnerform})
     else:
@@ -213,7 +267,7 @@ def make_partner(request):
 
 @ensure_csrf_cookie
 def make_kiosk(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and not request.user.groups.filter(name='Client').exists():
         if request.user.groups.filter(name='Client').exists():
             return HttpResponseRedirect(reverse('analytics:home'))
         kiosk_form = KioskForm(request.POST or None)
@@ -221,7 +275,7 @@ def make_kiosk(request):
             k = kiosk_form.save(commit=False)
             k.CreatedOn = datetime.datetime.now()
             if request.user.groups.filter(name='Partner').exists():
-                partner = Partner.objects.get(PartnerName=request.user)
+                partner = Partner.objects.get(User=request.user)
                 p2k = PartnerToKiosk(Kiosk = k, Partner=partner)
                 k.save()
                 p2k.save()
@@ -238,16 +292,15 @@ def make_kiosk(request):
         return HttpResponseRedirect(reverse('analytics:home'))
 
 #autocomplete for clients
-
 class ClientAutoComplete(autocomplete.Select2QuerySetView):
     def post(self,request):
-        print('User',request.user)
+        print('User',request)
         if request.user.is_authenticated:
             if request.user.groups.filter(name='Partner').exists():
-                client = Client.objects.create(ClientName = request.POST['text'])
-                partner =  Partner.objects.get(PartnerName=request.user)
-                PartnerToClient.objects.create(Client=client,Partner=partner)
                 myuser = User.objects.create_user(request.POST['text'],'','password',is_staff=True)
+                client = Client.objects.create(ClientName = request.POST['text'],User = myuser)
+                partner =  Partner.objects.get(User=request.user)
+                PartnerToClient.objects.create(Client=client,Partner=partner)
                 group =  Group.objects.get(name='Client')
                 group.user_set.add(myuser)
                 return http.JsonResponse({
@@ -255,8 +308,8 @@ class ClientAutoComplete(autocomplete.Select2QuerySetView):
                 'text':client.ClientName
                 })
             elif request.user.groups.filter(name='Admin').exists():
-                client = Client.objects.create(ClientName = request.POST['text'])
                 myuser = User.objects.create_user(request.POST['text'],'','password',is_staff=True)
+                client = Client.objects.create(ClientName = request.POST['text'],User = myuser)
                 group =  Group.objects.get(name='Client')
                 group.user_set.add(myuser)
                 return http.JsonResponse({
@@ -314,7 +367,7 @@ class LocationAutoComplete(autocomplete.Select2QuerySetView):
         elif self.request.user.groups.filter(name='Admin').exists():
             qs = Location.objects.all().order_by("LocationName")
         elif self.request.user.groups.filter(name='Client').exists():
-            kiosks = Kiosk.objects.filter(Client__ClientName = self.request.user)
+            kiosks = Kiosk.objects.filter(Client__User = self.request.user)
             qs = Location.objects.filter(pk__in=kiosks.values('Kiosk__Location') ).order_by("LocationName")
         else:
             qs = Location.objects.none()
@@ -331,7 +384,7 @@ class KioskAutoComplete(autocomplete.Select2QuerySetView):
         elif self.request.user.groups.filter(name='Admin').exists():
             qs = Kiosk.objects.all().order_by("ID")
         elif self.request.user.groups.filter(name='Client').exists():
-            qs =  Kiosk.objects.filter(Client__ClientName = self.request.user).order_by('ID')
+            qs =  Kiosk.objects.filter(Client__User = self.request.user).order_by('ID')
         else:
             qs = Kiosk.objects.none()
         if self.q:

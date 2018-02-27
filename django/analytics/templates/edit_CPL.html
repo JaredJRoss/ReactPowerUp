@@ -1,0 +1,53 @@
+{% extends "basePower.html" %}
+{% block content %}
+
+{% load widget_tweaks %}
+{% load static %}
+{% load auth_extras %}
+
+  <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/dist/js/select2.full.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+    <div style = "  justify-content: center;">
+    <h2>Edit Client</h2>
+    <form method="POST" class="post-form">
+      {% csrf_token %}
+      Client : <select name="Client" style="display:inline-block" class="form-control" id="id_Client" data-autocomplete-light-url="/client-autocomplete/" data-autocomplete-light-function="select2"></select>
+      <div class='spacing1'></div>
+      Updated Client Name:<input type="text" name="ClientName" maxlength="150" style="display:inline-block" class="form-control"  />
+      <div class='spacing1'></div>
+      <button type = "submit">Edit Client</button>
+    <div class='spacing1'></div>
+    <div class='spacing1'></div>
+{% if request.user|has_group:"Admin"%}
+    <h2>Edit Partner</h2>
+
+      Partner : <select name="Partner" style="display:inline-block" class="form-control" id="id_Partner" data-autocomplete-light-url="/partner-autocomplete/" data-autocomplete-light-function="select2"></select>
+      <div class='spacing1'></div>
+      Updated Partner Name: <input type="text" name="PartnerName" maxlength="150" style="display:inline-block" class="form-control"/>
+      <div class='spacing1'></div>
+      <button type = "submit">Edit Partner</button>
+    <div class='spacing1'></div>
+    <div class='spacing1'></div>
+    {% endif %}
+    <h2>Edit Location</h2>
+
+      Location : <select name="Location" style="display:inline-block" class="form-control" id="id_Location" data-autocomplete-light-url="/location-autocomplete/" data-autocomplete-light-function="select2"></select>
+      <div class='spacing1'></div>
+      Updated Location Name: <input type="text" name="LocationName" maxlength="150" style="display:inline-block" class="form-control" />
+      <div class='spacing1'></div>
+      Updated Address:<input type="text" name="Address" maxlength="150" style="display:inline-block" class="form-control"  />
+      <div class="spacing1"></div>
+      <button type = "submit">Edit Location</button>
+    </form>
+    <div class='spacing1'></div>
+    <div class='spacing1'></div>
+  </div>
+    {% endblock %}

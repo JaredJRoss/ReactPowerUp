@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 #All Classes
 class ServerTest(models.Model):
@@ -11,7 +12,7 @@ class Partner(models.Model):
         return self.PartnerName
 
     PartnerName = models.CharField(name = "PartnerName",max_length = 150)
-
+    User = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
 #Keep Track of clients who are using kiosks
 class Client(models.Model):
     def __str__(self):
@@ -19,6 +20,7 @@ class Client(models.Model):
 
     ClientName = models.CharField(name = "ClientName", max_length=150,unique=True)
     Logo = models.FileField(upload_to='logo',blank=True,null=True)
+    User = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
 
 #Catergories for type of clients for search purposes
 class Catergories(models.Model):

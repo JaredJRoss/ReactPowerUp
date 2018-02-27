@@ -103,10 +103,10 @@ class Dashboard(APIView):
         if request.user.groups.filter(name='Admin').exists():
             qs = Kiosk.objects.all()
         elif request.user.groups.filter(name='Partner').exists():
-            clients = PartnerToClient.objects.filter(Partner__PartnerName=request.user.username)
+            clients = PartnerToClient.objects.filter(Partner__User=request.user)
             qs = Kiosk.objects.filter(Client__in = clients.values('Client'))
         elif request.user.groups.filter(name='Client').exists():
-            qs = Kiosk.objects.filter(Client__ClientName = request.user.username)
+            qs = Kiosk.objects.filter(Client__User = request.user)
         else:
             qs = Kiosk.objects.none()
         kioskFilter = KioskFilter(request.GET,qs)
@@ -134,9 +134,9 @@ class KioskDetails(APIView):
         kID = request.GET.get('ID',None)
         kiosk = Kiosk.objects.get(ID=kID)
         if request.user.groups.filter(name='Partner').exists():
-            partner = PartnerToKiosk.objects.get(Partner__PartnerName = request.user, Kiosk= kiosk)
+            partner = PartnerToKiosk.objects.get(Partner__User = request.user, Kiosk= kiosk)
         elif request.user.groups.filter(name='Client').exists():
-            client  = request.user.username == kiosk.Client.ClientName
+            client  = request.user == kiosk.Client.User
         elif request.user.groups.filter(name='Admin').exists():
             admin = True
         else:
@@ -174,10 +174,10 @@ class Search(APIView):
         if request.user.groups.filter(name='Admin').exists():
             qs = Kiosk.objects.all()
         elif request.user.groups.filter(name='Partner').exists():
-            clients = PartnerToClient.objects.filter(Partner__PartnerName=request.user.username)
-            qs = Kiosk.objects.filter(Client__in = clients.values('Client'))
+            clients = PartnerToKiosk.objects.filter(Partner__User=request.user)
+            qs = Kiosk.objects.filter(ID__in = clients.values('Kiosk_id'))
         elif request.user.groups.filter(name='Client').exists():
-            qs = Kiosk.objects.filter(Client__ClientName = request.user.username)
+            qs = Kiosk.objects.filter(Client__User = request.user)
         else:
             qs = Kiosk.objects.none()
         print(qs)

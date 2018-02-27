@@ -1,9 +1,15 @@
 {% load static %}
+{% load auth_extras %}
 
 <!DOCTYPE html>
 
 <html lang="en"class="no-js">
   <head>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+
+  </body>
     <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -31,15 +37,23 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="nav navbar-nav ml-auto">
+        {% if request.user|has_group:"Admin" or request.user|has_group:"Partner" %}
+
         <li class="nav-item">
           <div class="dropdown">
             <a class="nav-link" href="#">Admin Option</a>
             <div class="dropdown-content">
               <a href="{%url 'analytics:add_kiosk'%}">Add Kiosk</a>
+              {% if request.user|has_group:"Admin"%}
               <a href="{%url 'analytics:add_partner'%}">Add Partner</a>
+              {%endif%}
+              <a href="{%url 'analytics:edit_CPL'%}">Edit</a>
+
             </div>
           </div>
         </li>
+        {% endif %}
+
         <li class="nav-item">
           <a class="nav-link" href="{%url 'analytics:logout'%}">Logout</a>
         </li>
@@ -57,10 +71,7 @@
     <p></p>
 
   </div>
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
-</body>
+
 
 
 

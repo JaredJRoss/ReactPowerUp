@@ -6,12 +6,12 @@ from dal import autocomplete
 class PartnerForm(forms.ModelForm):
     class Meta:
         model = Partner
+        exclude=('User',)
         fields = '__all__'
 
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
-        exclude = ('Logo',)
         fields=('ClientName',)
 
 class LocationForm(forms.ModelForm):

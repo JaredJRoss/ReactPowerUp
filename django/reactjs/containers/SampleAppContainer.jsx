@@ -72,7 +72,6 @@ export default class SampleAppContainer extends React.Component {
             <div id ="hidden-div" className ="collapse" style={{color:"black"}}>
               <div className="spacing1"> </div>
               <form onSubmit={this.handleSearch}>
-              <DjangoCSRFToken/>
               <fieldset>
 
                 Location: <select ref={(input)=>this.Location = input} name="Location" className="form-control" id="id_Location" data-autocomplete-light-url="/location-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
