@@ -76,9 +76,10 @@ nav {
 
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
 .transparentbox {
-  padding: 20px;
+  padding: 5px;
+  width:100%;
   border: 1px solid rgba(0,0,0,0.3);
-  min-height: 300px;
+  min-height: 500;
 
   background: rgba(0, 0, 0, 0.11);
 

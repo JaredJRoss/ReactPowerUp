@@ -79,7 +79,26 @@ def TypeOfChargePie(ports,times):
     iphone =  times.filter(Port__in =i)
     usbc =  times.filter(Port__in =u)
     other =  times.filter(Port__in =o)
-    val = [{'x':'Android','y':android.count()},{'x':'IPhone','y':iphone.count()},{'x':'USB-C','y':usbc.count()},{'x':'Other','y':other.count()}]
+    total = iphone.count()+android.count()+usbc.count()+other.count()
+    try:
+        a_percent = str(int(100*(android.count()/total)))
+    except ZeroDivisionError:
+        a_percent=str(0)
+    try:
+        i_percent = str(int(100*(iphone.count()/total)))
+    except ZeroDivisionError:
+        i_percent=str(0)
+    try:
+        u_percent = str(int(100*(usbc.count()/total)))
+    except ZeroDivisionError:
+        u_percent=str(0)
+    try:
+        o_percent = str(int(100*(other.count()/total)))
+    except ZeroDivisionError:
+        o_percent=str(0)
+
+    val = [{'x':'Android-'+a_percent+'%','y':android.count()},{'x':'IPhone-'+i_percent+'%','y':iphone.count()},\
+    {'x':'USB-C-'+u_percent+'%','y':usbc.count()},{'x':'Other-'+o_percent+'%','y':other.count()}]
     data={
         'label':'TypeOfChare',
         'values':val
@@ -115,7 +134,7 @@ class Dashboard(APIView):
         times = filter_dates(times,request.GET)
         val['count'] = times.count()
         try:
-            val['avg'] = times.aggregate(Sum('Duration'))['Duration__sum']/times.count()
+            val['avg'] = int(times.aggregate(Sum('Duration'))['Duration__sum']/times.count())
         except TypeError:
             val['avg'] = 0
         val['TypeOfCharge'] = TypeOfChargePie(ports,times)

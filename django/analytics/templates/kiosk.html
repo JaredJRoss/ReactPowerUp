@@ -25,20 +25,7 @@
     <input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input>
   </form>
   </div>
-    <div class="spacing2"> </div>
-    <div class="spacing1"> </div>
-    <div class="spacing1"> </div>
-    <form method = "POST" action="">
-      {% csrf_token %}
-    Location: {% render_field kioskform.Location class="form-control" %}
-    <div class="spacing1"> </div>
-    {%if permission != 'client'%}
-    Client: {% render_field kioskform.Client class="form-control" %}
-    <div class="spacing1"> </div>
-    {%endif%}
-    <input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input>
 
-  </form>
     <div class="spacing1"> </div>
     {%if permission == 'admin'%}
     <h5> Admin Options </h5>

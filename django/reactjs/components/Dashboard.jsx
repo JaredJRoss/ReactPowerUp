@@ -68,7 +68,7 @@ export default class Dashboard extends React.Component {
           <tbody>
             <tr>
               <td>
-                <h3 style={{textAlign:'center'}}>Charges By Time Of Days</h3>
+                <h3 style={{textAlign:'center'}}>Charges By Hour</h3>
                 <BarChart
                 data={this.state.bar}
                 height={400}
@@ -78,13 +78,13 @@ export default class Dashboard extends React.Component {
 
             </td>
               <td>
-              <h3 style={{textAlign:'center'}}>Charges By Type</h3>
+              <h3 style={{textAlign:'center'}}>Charge Distribution By Phone Type</h3>
 
                 <PieChart
                 data={this.state.pie}
                 width={400}
                 height={400}
-                margin={{top:10,bottom:50,left:50,right:50}}
+                margin={{top:10,bottom:50,left:100,right:100}}
                 sort={null}
                 tooltipHtml = {this.tooltipPie}
                 />
@@ -95,7 +95,8 @@ export default class Dashboard extends React.Component {
                 <h3 style={{textAlign:'center'}}>Total Charges:{this.state.total}</h3>
               </td>
               <td>
-                <h3 style={{textAlign:'center'}}>Average Charge:{this.state.avg}</h3>
+                <h3 style={{textAlign:'center'}}>Average Charge Duration<div className="spacing1"> </div>
+                                                {this.state.avg}</h3>
               </td>
             </tr>
             </tbody>

@@ -16,7 +16,7 @@ from dateutil.relativedelta import relativedelta
 from django.db.models import Sum
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.http import HttpResponse
-
+from django.utils import timezone
 @ensure_csrf_cookie
 def edit_client(request):
     print(request.POST)
@@ -154,8 +154,8 @@ def upload(request):
     return HttpResponse(status=200)
 
 def filter_dates(times,GET):
-    start_date = datetime.datetime.now().replace(year=2015)
-    end_date = datetime.datetime.now()
+    start_date = timezone.localtime().replace(year=2015)
+    end_date = timezone.localtime()
     last = GET.get("date",None)
     if last:
         if last == 'hour':
@@ -176,7 +176,6 @@ def filter_dates(times,GET):
     end = GET.get('end',None)
     if end != None and end!='':
         end_date = parser.parse(end)
-
     return times.filter(TimeIn__range=(start_date,end_date))
 
 
