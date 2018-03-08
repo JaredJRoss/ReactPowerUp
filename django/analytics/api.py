@@ -181,7 +181,7 @@ class KioskDetails(APIView):
                     last_update = None
                     total_count = 0
                     flag = True
-                port_arr.append({'pk':p.pk,'Type':p.Type,'Port':p.Port,'Last_Update':last_update,'Flag':flag,'Total':total_count})
+                port_arr.append({'pk':p.pk,'Type':p.Type,'Port':p.Port,'Last_Update':last_update.strftime("%m/%d/%Y %I:%M:%S %p"),'Flag':flag,'Total':total_count})
         return Response({'ports':port_arr,'online':online})
 
 class Search(APIView):
@@ -212,7 +212,7 @@ class Search(APIView):
             k['Tot'] = times.count()
             try:
                 last = times.latest('TimeOut').TimeOut.replace(tzinfo=None)
-                k['last_update'] = last.strftime("%Y-%m-%d %H:%M:%S")
+                k['last_update'] = last.strftime("%m/%d/%Y %I:%M:%S %p")
                 if (datetime.datetime.now().replace(tzinfo=None)-last.replace(tzinfo=None)).days > 50:
                     k['online'] = False
                 else:

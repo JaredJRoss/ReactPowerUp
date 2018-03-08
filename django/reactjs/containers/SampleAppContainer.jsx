@@ -64,7 +64,7 @@ export default class SampleAppContainer extends React.Component {
 
       <div className="container">
       <section>
-          <h1>Welcome {this.props.user}</h1>
+          <h1>Overview Dashboard For {this.props.user}</h1>
           <div className="spacing1"></div>
           {this.state.dashboard}
           <div style={{textAlign:'center'}}>

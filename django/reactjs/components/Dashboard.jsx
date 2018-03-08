@@ -64,7 +64,7 @@ export default class Dashboard extends React.Component {
       return (
         <div className="dash">
         <div className = "transparentbox">
-        <table>
+        <table className=".table">
           <tbody>
             <tr>
               <td>
@@ -92,7 +92,8 @@ export default class Dashboard extends React.Component {
             </tr>
             <tr>
               <td>
-                <h3 style={{textAlign:'center'}}>Total Charges:{this.state.total}</h3>
+                <h3 style={{textAlign:'center'}}>Total Charges<div className="spacing1"></div>
+                                                {this.state.total}</h3>
               </td>
               <td>
                 <h3 style={{textAlign:'center'}}>Average Charge Duration<div className="spacing1"> </div>
@@ -105,7 +106,7 @@ export default class Dashboard extends React.Component {
         <div className="spacing1"> </div>
 
         <div style={{textAlign:'center'}}>
-        <a onClick ={this.handleDate('all')} style={{text_decoration:"none"}} className="transparent_btn">All Time</a>
+        <a onClick ={this.handleDate('all')} style={{text_decoration:"none"}} className="transparent_btn">Total Charges</a>
         <a onClick ={this.handleDate('year')} style={{text_decoration:"none"}} className="transparent_btn">Last Year</a>
         <a onClick ={this.handleDate('quarter')} style={{text_decoration:"none"}} className="transparent_btn">Last Quarter</a>
         <a onClick ={this.handleDate('month')} style={{text_decoration:"none"}} className="transparent_btn">Last Month</a>
