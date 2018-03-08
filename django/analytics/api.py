@@ -213,7 +213,7 @@ class Search(APIView):
             k['Tot'] = times.count()
             try:
                 last = times.latest('TimeOut').TimeOut
-                k['last_update'] = last.strftime("%m/%d/%Y %I:%M:%S %p")
+                k['last_update'] = last.strftime("%m/%d")
                 if (datetime.datetime.now().replace(tzinfo=None)-last.replace(tzinfo=None)).days > 50:
                     k['online'] = False
                 else:

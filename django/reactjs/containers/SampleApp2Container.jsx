@@ -49,7 +49,7 @@ export default class SampleApp2Container extends React.Component {
           </thead>
         </table>
       </div>
-      <div className="tbl-content">
+      <div className="tbl-content" style={{height:400}}>
         <table>
           <tbody>
           {this.state.ports.map(p=>

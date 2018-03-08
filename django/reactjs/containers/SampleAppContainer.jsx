@@ -64,7 +64,7 @@ export default class SampleAppContainer extends React.Component {
 
       <div className="container">
       <section>
-          <h1>Overview Dashboard For {this.props.user}</h1>
+          <h1>Overview Dashboard</h1>
           <div className="spacing1"></div>
           {this.state.dashboard}
           <div style={{textAlign:'center'}}>
@@ -115,16 +115,16 @@ export default class SampleAppContainer extends React.Component {
               <tbody>
 
               {this.state.kiosks.map(k=>
-                  <tr key={k.ID}>
+                  <tr key={k.ID} style={{height:12}}>
                   <td>{k.online ?
-                  <img style={{height:15}} src="/static/images/Green_sphere.png"/>
-                  :<img style={{height:15}} src="/static/images/Red_sphere.png"/>}</td>
+                  <img style={{height:10}} src="/static/images/Green_sphere.png"/>
+                  :<img style={{height:10}} src="/static/images/Red_sphere.png"/>}</td>
                   <td><a href ={'/kiosk/'+k.ID}>{k.ID}</a></td>
                   <td>{k.Client}</td>
                   <td>{k.Loc}</td>
                   <td>{k.last_update}</td>
                   <td>{k.Tot}</td>
-                  <td> <a href={"/edit_kiosk/"+k.ID} style={{text_decoration:"none"}} className="transparent_btn" >Edit</a></td>
+                  <td> <a href={"/edit_kiosk/"+k.ID} style={{text_decoration:"none", lineHeight:"0%"}} className="transparent_btn" >Edit</a></td>
                   </tr>
               )}
               </tbody>
