@@ -165,7 +165,7 @@ def filter_dates(times,GET):
     last = GET.get("date",None)
     if last:
         if last == 'hour':
-            start_date = end_date - timedeltadatetime(hours=1)
+            start_date = end_date - timedelta(hours=1)
         elif last == 'day':
             start_date = end_date - timedelta(days=1)
         elif last == 'week':
