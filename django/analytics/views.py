@@ -17,6 +17,8 @@ from django.db.models import Sum
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.http import HttpResponse
 from django.utils import timezone
+import pytz
+from pytz import timezone
 @ensure_csrf_cookie
 def edit_client(request):
     print(request.POST)
@@ -154,12 +156,16 @@ def upload(request):
     return HttpResponse(status=200)
 
 def filter_dates(times,GET):
-    start_date = timezone.localtime().replace(year=2015)
-    end_date = timezone.localtime()
+    est = timezone('US/Eastern')
+    start_date = datetime.datetime.now()
+    start_date = start_date.replace(year=2016, tzinfo=est)
+    end_date = datetime.datetime.now().replace(tzinfo=est)
+    start_date = start_date.replace(tzinfo=None)
+    end_date = end_date.replace(tzinfo =None)
     last = GET.get("date",None)
     if last:
         if last == 'hour':
-            start_date = end_date - timedelta(hours=1)
+            start_date = end_date - timedeltadatetime(hours=1)
         elif last == 'day':
             start_date = end_date - timedelta(days=1)
         elif last == 'week':
@@ -221,14 +227,12 @@ def kiosk_view(request,pk):
             partnerform = PartnerToKioskForm(request.POST or None,instance=partner2kiosk)
             if partnerform.is_valid():
                 try:
-                    print('Changing')
                     partner2kiosk = PartnerToKiosk.objects.get(Kiosk__ID = pk)
                     partner2kiosk.Partner = partnerform.cleaned_data['Partner']
                     kiosk = Kiosk.objects.get(ID=pk)
                     kiosk.Client = Client.objects.get(ClientName="None")
                     kiosk.Location = Location.objects.get(LocationName="None")
-                    print('Location')
-                    print("Kiosk ",kiosk)
+
                     kiosk.save()
                     partner2kiosk.save()
                 except PartnerToKiosk.DoesNotExist:

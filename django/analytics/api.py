@@ -8,6 +8,7 @@ from .filters import *
 import datetime
 from .views import filter_dates
 from django.db.models import Sum
+import pytz
 
 # Serializers define the API representation.
 class TimeSerializer(serializers.HyperlinkedModelSerializer):
@@ -167,11 +168,12 @@ class KioskDetails(APIView):
             times = Time.objects.filter(Port__in=port)
             times = filter_dates(times,request.GET)
             for p in port:
+                print("Port:",p,' pk ',p.pk)
                 try:
                     temp_time = times.filter(Port= p)
-                    last_update = temp_time.latest('TimeOut').TimeOut.replace(tzinfo=None)
+                    last_update = temp_time.latest('TimeOut').TimeOut
                     total_count = temp_time.count()
-                    elasped_time =  last_update - datetime.datetime.now().replace(tzinfo=None)
+                    elasped_time =  last_update - datetime.datetime.now()
                     if elasped_time.days < -20:
                         flag = True
                     else:
@@ -208,10 +210,9 @@ class Search(APIView):
             k['Loc'] = kiosk.Location.LocationName
             ports = Port.objects.filter(Kiosk = kiosk)
             times = Time.objects.filter(Port__in = ports)
-            print(times)
             k['Tot'] = times.count()
             try:
-                last = times.latest('TimeOut').TimeOut.replace(tzinfo=None)
+                last = times.latest('TimeOut').TimeOut
                 k['last_update'] = last.strftime("%m/%d/%Y %I:%M:%S %p")
                 if (datetime.datetime.now().replace(tzinfo=None)-last.replace(tzinfo=None)).days > 50:
                     k['online'] = False
