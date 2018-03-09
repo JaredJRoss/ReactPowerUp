@@ -168,12 +168,12 @@ class KioskDetails(APIView):
             times = Time.objects.filter(Port__in=port)
             times = filter_dates(times,request.GET)
             for p in port:
-                print("Port:",p,' pk ',p.pk)
                 try:
                     temp_time = times.filter(Port= p)
                     last_update = temp_time.latest('TimeOut').TimeOut
                     total_count = temp_time.count()
                     elasped_time =  last_update - datetime.datetime.now()
+                    last_update = last_update.strftime("%m/%d/%Y %I:%M:%S %p")
                     if elasped_time.days < -20:
                         flag = True
                     else:
@@ -183,7 +183,7 @@ class KioskDetails(APIView):
                     last_update = None
                     total_count = 0
                     flag = True
-                port_arr.append({'pk':p.pk,'Type':p.Type,'Port':p.Port,'Last_Update':last_update.strftime("%m/%d/%Y %I:%M:%S %p"),'Flag':flag,'Total':total_count})
+                port_arr.append({'pk':p.pk,'Type':p.Type,'Port':p.Port,'Last_Update':last_update,'Flag':flag,'Total':total_count})
         return Response({'ports':port_arr,'online':online})
 
 class Search(APIView):
@@ -210,6 +210,7 @@ class Search(APIView):
             k['Loc'] = kiosk.Location.LocationName
             ports = Port.objects.filter(Kiosk = kiosk)
             times = Time.objects.filter(Port__in = ports)
+            times = filter_dates(times,request.GET)
             k['Tot'] = times.count()
             try:
                 last = times.latest('TimeOut').TimeOut

@@ -16,6 +16,7 @@ export default class SampleApp2Container extends React.Component {
       return response.json()
     }).then(data => this.setState({ports:data.ports, online:data.online}));
   }
+
   onUpdate(date,start,end){
     fetch('/api/kiosk?ID='+this.props.kiosk+'&date='+date+'&start='+start+'&end='+end,{
       credentials: 'include',
@@ -23,6 +24,7 @@ export default class SampleApp2Container extends React.Component {
       return response.json()
     }).then(data => this.setState({ports:data.ports,online:data.online}));
   }
+  
   render(){
     return(
       <div name="Dashboard">

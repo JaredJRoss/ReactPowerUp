@@ -25,7 +25,13 @@ export default class SampleAppContainer extends React.Component {
   }
 
   onUpdate(date,start,end){
+    fetch(this.state.url+'&date='+date+'&start='+start+'&end='+end,{
+      credentials: 'include',
+    }).then(function(response){
+      return response.json()
+    }).then(data => this.setState({kiosks:data}));
     this.setState({date:date,start:start,end:end})
+
   }
 
   handleSearch(event) {
@@ -48,7 +54,7 @@ export default class SampleAppContainer extends React.Component {
     console.log('Url'+url)
     this.setState({url:url,search_terms:search_terms})
 
-    fetch(url,{
+    fetch(url+'&date='+this.state.date+'&start='+this.state.start+'&end='+this.state.end,{
       credentials: 'include',
     }).then(function(response){
       return response.json()
