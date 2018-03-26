@@ -60,7 +60,7 @@ export default class SampleAppContainer extends React.Component {
       return response.json()
     }).then(data => this.setState({kiosks:data}));
 
-    this.setState({dashboard:<Dashboard search_terms={search_terms}/>})
+    this.setState({dashboard:<Dashboard search_terms={search_terms} onUpdate={this.onUpdate.bind(this)} />})
     console.log('search '+search_terms)
     event.preventDefault();
   }
@@ -84,7 +84,7 @@ export default class SampleAppContainer extends React.Component {
                 &nbsp;  &nbsp; Client: <select  ref={(input)=>this.Client= input} name="Client" className="form-control" id="id_Client" data-autocomplete-light-url="/client-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
                 <div className="spacing1"> </div>
 
-                Kiosk ID: <select name="ID"  ref={(input)=>this.Kiosk = input} className="form-control" id="id_ID" data-autocomplete-light-url="/kiosk-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
+                Station ID: <select name="ID"  ref={(input)=>this.Kiosk = input} className="form-control" id="id_ID" data-autocomplete-light-url="/kiosk-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
                 &nbsp;  &nbsp;  Type: <select   ref={(input)=>this.Type = input} name="Type" className="form-control" id="id_Type" data-autocomplete-light-url="/type-autocomplete/" data-autocomplete-light-function="select2" multiple="multiple"></select>
 
               </fieldset>
@@ -98,7 +98,7 @@ export default class SampleAppContainer extends React.Component {
           <div className="spacing1"> </div>
           <div className="spacing1"> </div>
 
-          <h1>Kiosks</h1>
+          <h1>Stations</h1>
           <div className="spacing1"> </div>
 
           <div className="tbl-header">
@@ -106,7 +106,7 @@ export default class SampleAppContainer extends React.Component {
               <thead>
                 <tr>
                   <th>Online</th>
-                  <th>Kiosk</th>
+                  <th>Station</th>
                   <th>Client</th>
                   <th>Location</th>
                   <th>Last Charge</th>

@@ -127,17 +127,32 @@ def upload(request):
             try:
                 K = Kiosk.objects.get(ID=int(ID))
                 if port != '--':
+                    print("Port int:",int(port))
+
                     try:
                         p = Port.objects.get(Port=int(port), Kiosk = K)
                     except Port.DoesNotExist:
-                        p = Port.objects.create(Port=int(port), Kiosk=K, Type='Other')
+                        if int(port) in [9,10]:
+                            p = Port.objects.create(Port=int(port), Kiosk=K, Type='USB-C')
+                        elif int(port) in [5,6,7,8]:
+                            p = Port.objects.create(Port=int(port), Kiosk=K, Type='IPhone')
+                        elif int(port) in [1,2,3,4]:
+                            p = Port.objects.create(Port=int(port), Kiosk=K, Type='Android')
+                        else:
+                            p = Port.objects.create(Port=int(port), Kiosk=K, Type='Other')
+
 
                     month = date[0:2]
                     day = date[2:4]
                     year = '20'+date[4:6]
                     start_date = datetime.datetime.strptime(month+day+year+start,'%m%d%Y%H%M%S')
                     end_date = datetime.datetime.strptime(month+day+year+end,'%m%d%Y%H%M%S')
+
                     duration = round((end_date-start_date).total_seconds()/60)
+                    if duration < 0:
+                        end_date =  end_date+timedelta(days=1)
+                        duration = round((end_date-start_date).total_seconds()/60)
+
                     Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
             except Kiosk.DoesNotExist:
                 client = Client.objects.get(ClientName="None")
@@ -157,11 +172,12 @@ def upload(request):
 
 def filter_dates(times,GET):
     est = timezone('US/Eastern')
-    start_date = datetime.datetime.now()
-    start_date = start_date.replace(year=2016, tzinfo=est)
-    end_date = datetime.datetime.now().replace(tzinfo=est)
+    start_date = datetime.datetime.now(est)
+    start_date = start_date.replace(year=2016)
+    end_date = datetime.datetime.now(est)
     start_date = start_date.replace(tzinfo=None)
     end_date = end_date.replace(tzinfo =None)
+    print(start_date)
     last = GET.get("date",None)
     if last:
         if last == 'hour':

@@ -24,14 +24,14 @@ export default class SampleApp2Container extends React.Component {
       return response.json()
     }).then(data => this.setState({ports:data.ports,online:data.online}));
   }
-  
+
   render(){
     return(
       <div name="Dashboard">
       {
         this.state.online ?
-        <h1><img style={{height:'25px'}} src="/static/images/Green_sphere.png"/> <span>Kiosk {this.props.kiosk} Details</span></h1>
-        :<h1><img style={{height:'25px'}} src="/static/images/Red_sphere.png"/> <span>Kiosk  {this.props.kiosk} Details</span></h1>
+        <h1><img style={{height:'25px'}} src="/static/images/Green_sphere.png"/> <span>Station {this.props.kiosk} Details</span></h1>
+        :<h1><img style={{height:'25px'}} src="/static/images/Red_sphere.png"/> <span>Station  {this.props.kiosk} Details</span></h1>
       }
 
       <div class="spacing1"> </div>
