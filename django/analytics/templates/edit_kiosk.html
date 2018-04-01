@@ -14,6 +14,9 @@
     <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
     <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
 
+    <div class="spacing1"></div>
+    <h2>Edit Kiosk</h2>
+    <div class="spacing1"></div>
     <form method="POST" class="post-form">
       {% csrf_token %}
       ID: {%render_field kioskform.ID class="form-control"  style="display:inline-block"%}
@@ -25,4 +28,17 @@
       <div class='spacing1'></div>
       <button type = "submit">Edit Station</button>
     </form>
+    <div class='spacing1'></div>
+
+    <form action="{% url 'analytics:delete-kiosk' pk %}" method="post" enctype="multipart/form-data">
+                 {% csrf_token %}
+                 <button onclick="return confirm('Are you sure you want to delete this kiosk?')"
+                 type="submit">Delete Kiosk</button>
+     </form>
+    <div class="spacing1"></div>
+    <a href = '{%url 'analytics:home'%}'><button>Home</button></a>
+
+    <div class="spacing1"></div>
+    <div class="spacing1"></div>
+
     {% endblock %}

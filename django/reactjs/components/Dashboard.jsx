@@ -1,7 +1,8 @@
 import React from "react"
-import BarChart from 'react-d3-components/lib/BarChart'
-import PieChart from 'react-d3-components/lib/PieChart'
+import BarChart from "react-d3-components/lib/BarChart"
+import PieChart from "react-d3-components/lib/PieChart"
 import Datetime from "react-datetime"
+
 
 export default class Dashboard extends React.Component {
     constructor(props){
@@ -9,6 +10,7 @@ export default class Dashboard extends React.Component {
       this.state={
         Start:'',
         End:'',
+        colorScale:d3.scale.ordinal().domain([0,1,2,3]).range(["gray", "green", "blue", "orange"]),
       };
       fetch('/api/dash?'+this.props.search_terms+'&',{
         credentials:'include'
@@ -20,6 +22,8 @@ export default class Dashboard extends React.Component {
       this.tooltipPie = this.tooltipPie.bind(this);
       this.HandleCustomStart = this.HandleCustomStart.bind(this);
       this.HandleCustomEnd = this.HandleCustomEnd.bind(this);
+      console.log(d3.scale.ordinal().domain([0,1,2,3]).range(["red", "green", "blue", "orange"]));
+      console.log("Working")
     }
     componentWillReceiveProps(nextProps) {
       fetch('/api/dash?'+nextProps.search_terms+'&',{
@@ -67,6 +71,9 @@ export default class Dashboard extends React.Component {
         <table className=".table">
           <tbody>
             <tr>
+
+            </tr>
+            <tr>
               <td>
                 <h3 style={{textAlign:'center'}}>Charges By Hour</h3>
                 <BarChart
@@ -85,6 +92,7 @@ export default class Dashboard extends React.Component {
                 width={400}
                 height={400}
                 margin={{top:10,bottom:50,left:100,right:100}}
+                colorScale={this.state.colorScale}
                 sort={null}
                 tooltipHtml = {this.tooltipPie}
                 />

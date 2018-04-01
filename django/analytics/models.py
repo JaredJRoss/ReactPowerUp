@@ -35,7 +35,10 @@ class Location(models.Model):
         return self.LocationName
 
     LocationName = models.CharField(name = "LocationName",max_length = 150,unique=True)
-    Address = models.CharField(name="Address", max_length=150)
+    Address = models.CharField(name="Address", max_length=150, blank = True, null = True)
+    City = models.CharField(name="City", max_length=100, blank = True, null = True)
+    State = models.CharField(name="State", max_length=50, blank = True, null = True)
+    Zip = models.IntegerField(verbose_name = "Zip", blank = True, null = True)
 
 #The actual powerboard
 class Kiosk(models.Model):

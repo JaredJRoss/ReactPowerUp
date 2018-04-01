@@ -24,7 +24,11 @@ urlpatterns=[
     url(r'add_partner/$', make_partner, name='add_partner'),
     url(r'edit_port/(?P<pk>\d+)$',edit_port,name='edit_port'),
     url(r'edit_kiosk/(?P<pk>\d+)$',edit_kiosk,name='edit_kiosk'),
-    url(r'edit_CPL/$',edit_client,name='edit_CPL'),
+    url(r'editClient/$',edit_client,name='editClient'),
+    url(r'editLocation/$',edit_location,name='editLocation'),
+    url(r'editPartner/$',edit_partner,name='editPartner'),
+    url(r'delete-kiosk/(?P<pk>\d+)/$',deleteKiosk,name='delete-kiosk'),
+
     url(r'^client-autocomplete/$',ClientAutoComplete.as_view(create_field='ClientName'), name='client-autocomplete', ),
     url(r'^location-autocomplete/$',LocationAutoComplete.as_view(create_field='LocationName'), name='location-autocomplete', ),
     url(r'^kiosk-autocomplete/$',KioskAutoComplete.as_view(), name='kiosk-autocomplete', ),

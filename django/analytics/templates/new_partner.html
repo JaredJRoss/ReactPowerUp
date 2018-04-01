@@ -14,10 +14,19 @@
     <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
     <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
 
+    <div class="spacing1"></div>
+    <h2>Add a Partner</h2>
+    <div class="spacing1"></div>
     <form method="POST" class="post-form">
       {% csrf_token %}
       Partner: {%render_field partnerform.PartnerName class="form-control" %}
       <div class='spacing1'></div>
       <button type = "submit">Add a New Partner</button>
     </form>
+    <div class="spacing1"></div>
+
+    <a href = '{%url 'analytics:home'%}'><button>Home</button></a>
+    <div class="spacing1"></div>
+    <div class="spacing1"></div>
+
     {% endblock %}

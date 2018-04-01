@@ -5,6 +5,7 @@ import BarChart from 'react-d3-components/lib/BarChart'
 import PieChart from 'react-d3-components/lib/PieChart'
 import Dashboard from '../components/Dashboard'
 require('react-datetime');
+
 export default class SampleAppContainer extends React.Component {
   constructor(props){
     super(props);
@@ -125,7 +126,7 @@ export default class SampleAppContainer extends React.Component {
                   <td>{k.online ?
                   <img style={{height:10}} src="/static/images/Green_sphere.png"/>
                   :<img style={{height:10}} src="/static/images/Red_sphere.png"/>}</td>
-                  <td><a href ={'/kiosk/'+k.ID}>{k.ID}</a></td>
+                  <td><a title="More info" href ={'/kiosk/'+k.ID}>{k.ID}</a></td>
                   <td>{k.Client}</td>
                   <td>{k.Loc}</td>
                   <td>{k.last_update}</td>

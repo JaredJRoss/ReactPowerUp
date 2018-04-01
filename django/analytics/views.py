@@ -19,6 +19,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 import pytz
 from pytz import timezone
+
 @ensure_csrf_cookie
 def edit_client(request):
     print(request.POST)
@@ -26,25 +27,36 @@ def edit_client(request):
         form = False
         query_set = Kiosk.objects.none()
         kioskFilter  = KioskFilter(request.GET,query_set)
-        print(request.POST)
         clientform = ClientForm(request.POST or None)
         new_C_name = request.POST.get('ClientName',None)
-        new_P_name = request.POST.get('PartnerName',None)
-        new_L_name =  request.POST.get('LocationName',None)
-        new_address =  request.POST.get('Address',None)
+
         client = request.POST.get('Client',None)
-        location = request.POST.get('Location',None)
-        partner =  request.POST.get('Partner',None)
         if new_C_name and client:
             c = Client.objects.get(pk=client)
             c.ClientName = new_C_name
             c.save()
             form = True
-        if new_P_name and partner:
-            p = Partner.objects.get(pk=partner)
-            p.PartnerName = new_P_name
-            p.save()
-            form = True
+        if form:
+            HttpResponseRedirect(reverse('analytics:editClient'))
+        context ={
+        'clientform':clientform,
+        'filter':kioskFilter,
+        }
+        return render(request,'editClient.html',context)
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))
+
+@ensure_csrf_cookie
+def edit_location(request):
+    print(request.POST)
+    if request.user.is_authenticated and (request.user.groups.filter(name='Admin').exists() or request.user.groups.filter(name='Partner').exists()):
+        form = False
+        query_set = Kiosk.objects.none()
+        kioskFilter  = KioskFilter(request.GET,query_set)
+        clientform = ClientForm(request.POST or None)
+        new_L_name =  request.POST.get('LocationName',None)
+        new_address =  request.POST.get('Address',None)
+        location = request.POST.get('Location',None)
         if new_L_name and location:
             l = Location.objects.get(pk=location)
             l.LocationName = new_L_name
@@ -53,14 +65,40 @@ def edit_client(request):
             l.save()
             form = True
         if form:
-            HttpResponseRedirect(reverse('analytics:edit_CPL'))
+            HttpResponseRedirect(reverse('analytics:editLocation'))
         context ={
         'clientform':clientform,
         'filter':kioskFilter,
         }
-        return render(request,'edit_CPL.html',context)
+        return render(request,'editLocation.html',context)
     else:
         return HttpResponseRedirect(reverse('analytics:home'))
+
+@ensure_csrf_cookie
+def edit_partner(request):
+    print(request.POST)
+    if request.user.is_authenticated and (request.user.groups.filter(name='Admin').exists() or request.user.groups.filter(name='Partner').exists()):
+        form = False
+        query_set = Kiosk.objects.none()
+        kioskFilter  = KioskFilter(request.GET,query_set)
+        clientform = ClientForm(request.POST or None)
+        new_P_name = request.POST.get('PartnerName',None)
+        partner =  request.POST.get('Partner',None)
+        if new_P_name and partner:
+            p = Partner.objects.get(pk=partner)
+            p.PartnerName = new_P_name
+            p.save()
+            form = True
+        if form:
+            HttpResponseRedirect(reverse('analytics:editPartner'))
+        context ={
+        'clientform':clientform,
+        'filter':kioskFilter,
+        }
+        return render(request,'editPartner.html',context)
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))
+
 
 def edit_kiosk(request,pk):
     if request.user.is_authenticated:
@@ -71,11 +109,18 @@ def edit_kiosk(request,pk):
             return HttpResponseRedirect(reverse('analytics:home'))
         context ={
         'kioskform':kioskform,
+        'pk':pk
         }
         return render(request,'edit_kiosk.html',context)
     else:
         return HttpResponseRedirect(reverse('analytics:home'))
 
+def deleteKiosk(request,pk):
+    if request.user.is_authenticated:
+        kiosk = Kiosk.objects.get(ID=pk)
+        if request.method == 'POST':
+            kiosk.delete()
+            return HttpResponseRedirect(reverse('analytics:home'))
 
 def edit_port(request,pk):
     if request.user.is_authenticated:

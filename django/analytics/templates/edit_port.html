@@ -14,6 +14,7 @@
     <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
     <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
 
+    <div class="spacing1"></div>
     <form method="POST" class="post-form">
       {% csrf_token %}
       Port: {%render_field portform.Port class="form-control" %}
@@ -22,4 +23,11 @@
       <div class='spacing1'></div>
       <button type = "submit">Edit Port</button>
     </form>
+    
+    <div class="spacing1"></div>
+    <a href = '{%url 'analytics:home'%}'><button>Home</button></a>
+
+    <div class="spacing1"></div>
+    <div class="spacing1"></div>
+
     {% endblock %}
