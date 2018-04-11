@@ -2,7 +2,8 @@ import React from "react"
 import BarChart from "react-d3-components/lib/BarChart"
 import PieChart from "react-d3-components/lib/PieChart"
 import Datetime from "react-datetime"
-
+import ResponsiveBarChart from "../components/ResponsiveBar"
+import ResponsivePieChart from "../components/ResponsivePie"
 
 export default class Dashboard extends React.Component {
     constructor(props){
@@ -22,9 +23,8 @@ export default class Dashboard extends React.Component {
       this.tooltipPie = this.tooltipPie.bind(this);
       this.HandleCustomStart = this.HandleCustomStart.bind(this);
       this.HandleCustomEnd = this.HandleCustomEnd.bind(this);
-      console.log(d3.scale.ordinal().domain([0,1,2,3]).range(["red", "green", "blue", "orange"]));
-      console.log("Working")
     }
+
     componentWillReceiveProps(nextProps) {
       fetch('/api/dash?'+nextProps.search_terms+'&',{
         credentials:'include'
@@ -66,46 +66,43 @@ export default class Dashboard extends React.Component {
     }
     render() {
       return (
-        <div className="dash">
+        <div className="dash" style={{width:'100%'}}>
         <div className = "transparentbox">
         <table className=".table">
           <tbody>
             <tr>
-
-            </tr>
-            <tr>
-              <td>
+              <td colSpan={2}>
                 <h3 style={{textAlign:'center'}}>Charges By Hour</h3>
-                <BarChart
+                <ResponsiveBarChart
                 data={this.state.bar}
-                height={400}
-                width={400}
-                margin={{top:10,bottom:50,left:50,right:10}}
-                tooltipHtml={this.tooltipBar}/>
+                margin={{top:10,bottom:50,left:100,right:100}}
+                tooltipHtml={this.tooltipBar}
+                />
+
 
             </td>
-              <td>
+            </tr>
+            <tr>
+              <td colSpan={2}>
               <h3 style={{textAlign:'center'}}>Charge Distribution By Phone Type</h3>
 
-                <PieChart
+                <ResponsivePieChart
                 data={this.state.pie}
-                width={400}
-                height={400}
                 margin={{top:10,bottom:50,left:100,right:100}}
                 colorScale={this.state.colorScale}
-                sort={null}
                 tooltipHtml = {this.tooltipPie}
                 />
               </td>
             </tr>
             <tr>
               <td>
-                <h3 style={{textAlign:'center'}}>Total Charges<div className="spacing1"></div>
-                                                {this.state.total}</h3>
-              </td>
-              <td>
                 <h3 style={{textAlign:'center'}}>Average Charge Duration<div className="spacing1"> </div>
                                                 {this.state.avg}</h3>
+              </td>
+              <td>
+                <h3 style={{textAlign:'center'}}>Total Charges<div className="spacing1"></div>
+                                                {this.state.total}</h3>
+
               </td>
             </tr>
             </tbody>
