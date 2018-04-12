@@ -69,7 +69,7 @@ export default class SampleAppContainer extends React.Component {
   render() {
     return (
 
-      <div className="container">
+      <div className="container" style={{paddingRight:'0px', paddingLeft:'0px'}}>
       <section>
           <h1>Overview Dashboard</h1>
           <div className="spacing1"></div>
@@ -101,10 +101,8 @@ export default class SampleAppContainer extends React.Component {
 
           <h1>Stations</h1>
           <div className="spacing1"> </div>
-
-          <div className="tbl-header">
-            <table cellPadding="0" cellSpacing="0" border="0">
-              <thead>
+            <table cellPadding="5" cellSpacing="5" border="0" className ="table-responsive-lg">
+              <thead className = "tbl-header">
                 <tr>
                   <th>Online</th>
                   <th>Station</th>
@@ -115,12 +113,7 @@ export default class SampleAppContainer extends React.Component {
                   <th>Action</th>
                 </tr>
               </thead>
-            </table>
-          </div>
-          <div className="tbl-content">
-            <table cellPadding="0" cellSpacing="0" border="0">
-              <tbody>
-
+              <tbody className = "tbl-content">
               {this.state.kiosks.map(k=>
                   <tr key={k.ID} style={{height:12}}>
                   <td>{k.online ?
@@ -136,7 +129,6 @@ export default class SampleAppContainer extends React.Component {
               )}
               </tbody>
             </table>
-          </div>
           <div className="spacing1"> </div>
         </section>
 

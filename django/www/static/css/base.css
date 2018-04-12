@@ -151,6 +151,8 @@ h1{
 table{
   width:100%;
   table-layout: fixed;
+  overflow-x:auto;
+
 }
 .tbl-header{
   color:white;
@@ -183,8 +185,8 @@ td{
 section{
   margin-top: 100px;
   margin-bottom: 50px;
-  margin-left:50px;
-  margin-right:50px;
+  margin-left:5px;
+  margin-right:5px;
 
 }
 
