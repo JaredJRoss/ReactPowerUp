@@ -52,7 +52,7 @@ export default class SampleApp2Container extends React.Component {
         </table>
       </div>
       <div className="tbl-content" style={{height:400}}>
-        <table>
+        <table className ="table-responsive-lg">
           <tbody>
           {this.state.ports.map(p=>
             <tr key = {p.Port}>
