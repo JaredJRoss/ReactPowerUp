@@ -4,6 +4,8 @@ import PieChart from "react-d3-components/lib/PieChart"
 import Datetime from "react-datetime"
 import ResponsiveBarChart from "../components/ResponsiveBar"
 import ResponsivePieChart from "../components/ResponsivePie"
+import HighPieChart from "../components/HighPie"
+import HighBarChart from "../components/HighBar"
 
 export default class Dashboard extends React.Component {
     constructor(props){
@@ -17,7 +19,7 @@ export default class Dashboard extends React.Component {
         credentials:'include'
       }).then(function(response){
         return response.json()
-      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg}));
+      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh}));
 
       this.tooltipBar = this.tooltipBar.bind(this);
       this.tooltipPie = this.tooltipPie.bind(this);
@@ -30,7 +32,7 @@ export default class Dashboard extends React.Component {
         credentials:'include'
       }).then(function(response){
         return response.json()
-      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg}));
+      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh}));
     }
     HandleCustomEnd(event){
       console.log(event)
@@ -49,20 +51,21 @@ export default class Dashboard extends React.Component {
     handleDate = (date)=>(event)=>{
       this.props.onUpdate(date,this.state.Start,this.state.End)
       if(date == ''){
-      fetch('/api/dash?'+this.props.search_terms+'&start='+this.state.Start+'&end='+this.state.End,{
-        credentials:'include'
-      }).then(function(response){
-        return response.json()
-      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg}));
+        fetch('/api/dash?'+this.props.search_terms+'&start='+this.state.Start+'&end='+this.state.End,{
+          credentials:'include'
+        }).then(function(response){
+          return response.json()
+        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh}));
       }
       else{
         fetch('/api/dash?'+this.props.search_terms+'&date='+date,{
           credentials:'include'
         }).then(function(response){
           return response.json()
-        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg}));
+        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh}));
       }
       this.setState({date:date})
+
     }
     render() {
       return (
@@ -70,41 +73,32 @@ export default class Dashboard extends React.Component {
         <div className = "transparentbox">
         <table className=".table">
           <tbody>
-            <tr>
-              <td colSpan={2}>
-                <h3 style={{textAlign:'center'}}>Charges By Hour</h3>
-                <ResponsiveBarChart
-                data={this.state.bar}
-                margin={{top:10,bottom:50,left:100,right:100}}
-                tooltipHtml={this.tooltipBar}
-                />
-
+          <tr>
+            <td>
+              <h3 style={{textAlign:'center'}}>Average Charge Duration<div className="spacing1"> </div>
+                                              {this.state.avg}</h3>
+            </td>
+            <td>
+              <h3 style={{textAlign:'center'}}>Total Charges<div className="spacing1"></div>
+                                              {this.state.total}</h3>
 
             </td>
-            </tr>
-            <tr>
-              <td colSpan={2}>
-              <h3 style={{textAlign:'center'}}>Charge Distribution By Phone Type</h3>
+          </tr>
+          <tr>
+            <td colSpan={2}>
+              <HighBarChart
+              data = {this.state.highBar}
+              />
+              </td>
+          </tr>
+          <tr>
+            <td colSpan={2}>
+            <HighPieChart
+            data={this.state.highPie}
+            />
+            </td>
+          </tr>
 
-                <ResponsivePieChart
-                data={this.state.pie}
-                margin={{top:10,bottom:50,left:100,right:100}}
-                colorScale={this.state.colorScale}
-                tooltipHtml = {this.tooltipPie}
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <h3 style={{textAlign:'center'}}>Average Charge Duration<div className="spacing1"> </div>
-                                                {this.state.avg}</h3>
-              </td>
-              <td>
-                <h3 style={{textAlign:'center'}}>Total Charges<div className="spacing1"></div>
-                                                {this.state.total}</h3>
-
-              </td>
-            </tr>
             </tbody>
         </table>
         </div>

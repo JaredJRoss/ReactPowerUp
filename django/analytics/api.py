@@ -106,6 +106,7 @@ def TypeOfChargePie(ports,times):
         }
 
     return data
+
 def TimeOfDayBar(times):
     val = []
     for i in range(9,19):
@@ -115,6 +116,44 @@ def TimeOfDayBar(times):
     'values':val
     }]
     return data
+def TimeOfDayHigh(times):
+    val = []
+    for i in range(0,24):
+        val.append(times.filter(TimeOut__hour=i).count())
+    return val
+def TypeOfChargePieHigh(ports,times):
+    a = ports.filter(Type='Android')
+    i = ports.filter(Type='IPhone')
+    u = ports.filter(Type='USB-C')
+    o = ports.filter(Type='Other')
+    android = times.filter(Port__in =a)
+    iphone =  times.filter(Port__in =i)
+    usbc =  times.filter(Port__in =u)
+    other =  times.filter(Port__in =o)
+    total = iphone.count()+android.count()+usbc.count()+other.count()
+    try:
+        a_percent = str(int(100*(android.count()/total)))
+    except ZeroDivisionError:
+        a_percent=str(0)
+    try:
+        i_percent = str(int(100*(iphone.count()/total)))
+    except ZeroDivisionError:
+        i_percent=str(0)
+    try:
+        u_percent = str(int(100*(usbc.count()/total)))
+    except ZeroDivisionError:
+        u_percent=str(0)
+    try:
+        o_percent = str(int(100*(other.count()/total)))
+    except ZeroDivisionError:
+        o_percent=str(0)
+    if total ==0:
+        val = [{'name':'No Charges','y':100}]
+    else:
+        val = [{'name':'Android','y':100*(android.count()/total)},{'name':'IPhone','y':100*(iphone.count()/total)},\
+        {'name':'USB-C','y':100*(usbc.count()/total)},{'name':'Other','y':100*(other.count()/total)}]
+    return val
+
 class Dashboard(APIView):
     renderer_classes = (JSONRenderer, )
     queryset = Kiosk.objects.all()
@@ -140,6 +179,9 @@ class Dashboard(APIView):
             val['avg'] = 0
         val['TypeOfCharge'] = TypeOfChargePie(ports,times)
         val['TimeOfDay'] = TimeOfDayBar(times)
+        val['TimeOfDayHigh'] = TimeOfDayHigh(times)
+        val['TypeOfChargeHigh'] = TypeOfChargePieHigh(ports,times)
+
         return Response(val)
 
 class KioskDetails(APIView):

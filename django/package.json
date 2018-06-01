@@ -6,6 +6,8 @@
   "dependencies": {
     "django-react-csrftoken": "^1.0.3",
     "es6-promise": "^3.1.2",
+    "highcharts": "^6.1.0",
+    "highcharts-react-official": "^1.1.0",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.5.1",
     "moment": "^2.20.1",

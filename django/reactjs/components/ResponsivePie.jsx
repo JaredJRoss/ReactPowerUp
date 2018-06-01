@@ -9,9 +9,6 @@ export default class ResponsivePieChart extends React.Component {
     this.state={
       size:{w:0,h:0},
     };
-    console.log("Date")
-    console.log(this.props.data)
-    console.log(this.props.margin)
   }
 
   fitToParentSize() {
