@@ -81,14 +81,44 @@ WSGI_APPLICATION = 'djreact.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+if 'RDS_DB_NAME' in os.environ:
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': 'paradyme',
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+            'OPTIONS': {
+                'sql_mode': 'traditional',
+            }
+        }
     }
-}
-
+else:
+    if 1==0:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            }
+        }
+    if 1==1:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME':'ebdb',
+                'USER': 'powerup',
+                'PASSWORD': 'poweruppassword',
+                'HOST': 'aap0tx55jsp1vf.cet5xkp4eqrw.us-east-1.rds.amazonaws.com',
+                'PORT': '3306',
+                'OPTIONS': {
+                    'sql_mode': 'traditional',
+                }
+            }
+        }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
