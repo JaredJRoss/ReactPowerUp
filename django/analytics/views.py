@@ -29,7 +29,6 @@ def edit_client(request):
         kioskFilter  = KioskFilter(request.GET,query_set)
         clientform = ClientForm(request.POST or None)
         new_C_name = request.POST.get('ClientName',None)
-
         client = request.POST.get('Client',None)
         if new_C_name and client:
             c = Client.objects.get(pk=client)
@@ -156,7 +155,6 @@ def upload(request):
     if request.method == 'POST':
         test = test + 'POST:'+request.body.decode('utf-8')
     data = request.body.decode('utf-8')
-    print("data ",data)
     ServerTest.objects.create(Test=test)
     if data:
         arr = data.split("%")
@@ -213,6 +211,9 @@ def upload(request):
                     duration = round((end_date-start_date).total_seconds()/60)
                     Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
                 return HttpResponse("New kiosk made")
+    else:
+        return HttpResponse("No data")
+
     return HttpResponse(status=200)
 
 def filter_dates(times,GET):

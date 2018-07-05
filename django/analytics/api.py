@@ -97,7 +97,6 @@ def TypeOfChargePie(ports,times):
         o_percent = str(int(100*(other.count()/total)))
     except ZeroDivisionError:
         o_percent=str(0)
-
     val = [{'x':'Android-'+a_percent+'%','y':android.count()},{'x':'IPhone-'+i_percent+'%','y':iphone.count()},\
     {'x':'USB-C-'+u_percent+'%','y':usbc.count()},{'x':'Other-'+o_percent+'%','y':other.count()}]
     data={
