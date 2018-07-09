@@ -12,8 +12,19 @@ export default class HighBarDayChart extends React.Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.data)
-    this.setState({data:nextProps.data})
+    var parsed_data = nextProps.data.map(
+        function(arr){
+            return [Date.parse(arr[0]),arr[1]]
+        }
+        )
+    this.setState({data:parsed_data})
+  }
+ reviver(key,value){
+    const dateFormat = /^\d{4}-\d{2}-\d{2}$/;
+    if (typeof value === "string" && dateFormat.test(value)) {
+        return new Date(value);
+    }
+    return value;
   }
   render(){
     const options = {
