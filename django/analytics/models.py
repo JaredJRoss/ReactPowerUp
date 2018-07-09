@@ -107,3 +107,8 @@ class ClientToType(models.Model):
         return "Client:"+self.Client.ClientName + " has type "+self.Type.Type
     Type = models.ForeignKey(Catergories ,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client ,on_delete=models.CASCADE)
+class DayCount(models.Model):
+    def __str__(self):
+        return "Date "+str(self.Date)+ " Count" + str(self.Count)
+    Date = models.DateTimeField(verbose_name="Date")
+    Count = models.IntegerField(verbose_name="Count")    

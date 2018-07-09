@@ -111,6 +111,7 @@ export default class SampleAppContainer extends React.Component {
                   <th>Last Charge</th>
                   <th>Total Charge</th>
                   <th>Action</th>
+                  <th>Refresh</th>
                 </tr>
               </thead>
               <tbody className = "tbl-content">

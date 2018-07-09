@@ -6,6 +6,7 @@ import ResponsiveBarChart from "../components/ResponsiveBar"
 import ResponsivePieChart from "../components/ResponsivePie"
 import HighPieChart from "../components/HighPie"
 import HighBarChart from "../components/HighBar"
+import HighBarDayChart from "../components/HighBarDay"
 
 export default class Dashboard extends React.Component {
     constructor(props){
@@ -19,7 +20,7 @@ export default class Dashboard extends React.Component {
         credentials:'include'
       }).then(function(response){
         return response.json()
-      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh}));
+      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh,barDay:data.BarDay}));
 
       this.tooltipBar = this.tooltipBar.bind(this);
       this.tooltipPie = this.tooltipPie.bind(this);
@@ -27,15 +28,14 @@ export default class Dashboard extends React.Component {
       this.HandleCustomEnd = this.HandleCustomEnd.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps){
       fetch('/api/dash?'+nextProps.search_terms+'&',{
         credentials:'include'
       }).then(function(response){
         return response.json()
-      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh}));
+      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh,barDay:data.BarDay}));
     }
     HandleCustomEnd(event){
-      console.log(event)
       this.setState({End:event.format("MM/DD/YYYY HH:mm:ss")})
     }
     HandleCustomStart(event){
@@ -55,14 +55,14 @@ export default class Dashboard extends React.Component {
           credentials:'include'
         }).then(function(response){
           return response.json()
-        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh}));
+        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh,barDay:data.BarDay}));
       }
       else{
         fetch('/api/dash?'+this.props.search_terms+'&date='+date,{
           credentials:'include'
         }).then(function(response){
           return response.json()
-        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh}));
+        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh,barDay:data.BarDay}));
       }
       this.setState({date:date})
 
@@ -75,13 +75,20 @@ export default class Dashboard extends React.Component {
           <tbody>
           <tr>
             <td>
-              <h3 style={{textAlign:'center'}}>Average Charge Duration<div className="spacing1"> </div>
+              <h3 style={{textAlign:'center'}}>Dwell Time<div className="spacing1"> </div>
                                               {this.state.avg}</h3>
             </td>
             <td>
               <h3 style={{textAlign:'center'}}>Total Charges<div className="spacing1"></div>
                                               {this.state.total}</h3>
 
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={2}>
+            <HighBarDayChart
+              data={this.state.barDay}
+            />
             </td>
           </tr>
           <tr>

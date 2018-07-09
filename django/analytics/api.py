@@ -115,11 +115,20 @@ def TimeOfDayBar(times):
     'values':val
     }]
     return data
+
 def TimeOfDayHigh(times):
     val = []
     for i in range(0,24):
         val.append(times.filter(TimeOut__hour=i).count())
     return val
+
+def DayBarHigh(times):
+    val = []
+    query_set = DayCount.objects.all().order_by('-Date').reverse()
+    for count in query_set:
+        val.append([str(count.Date.year)+"-"+str(count.Date.month)+"-"+str(count.Date.day),count.Count])
+    return val
+
 def TypeOfChargePieHigh(ports,times):
     a = ports.filter(Type='Android')
     i = ports.filter(Type='IPhone')
@@ -149,7 +158,7 @@ def TypeOfChargePieHigh(ports,times):
     if total ==0:
         val = [{'name':'No Charges','y':100}]
     else:
-        val = [{'name':'Android','y':100*(android.count()/total)},{'name':'IPhone','y':100*(iphone.count()/total)},\
+        val = [{'name':'Android','y':100*(android.count()/total)},{'name':'Apple','y':100*(iphone.count()/total)},\
         {'name':'USB-C','y':100*(usbc.count()/total)},{'name':'Other','y':100*(other.count()/total)}]
     return val
 
@@ -180,7 +189,7 @@ class Dashboard(APIView):
         val['TimeOfDay'] = TimeOfDayBar(times)
         val['TimeOfDayHigh'] = TimeOfDayHigh(times)
         val['TypeOfChargeHigh'] = TypeOfChargePieHigh(ports,times)
-
+        val['BarDay'] = DayBarHigh(times)
         return Response(val)
 
 class KioskDetails(APIView):
