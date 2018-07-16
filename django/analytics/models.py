@@ -48,7 +48,7 @@ class Location(models.Model):
 #The actual powerboard
 class Kiosk(models.Model):
     def __str__(self):
-        return "Kiosk:"+str(self.ID) + " with client "+self.Client.ClientName+" at location "+self.Location.LocationName
+        return "Station:"+str(self.ID)
 
     ID = models.IntegerField(verbose_name="ID", primary_key=True)
     Location = models.ForeignKey(Location,blank=True,null=True, related_name='KioskToLocation' ,on_delete=models.CASCADE)

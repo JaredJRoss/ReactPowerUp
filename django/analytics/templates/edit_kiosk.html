@@ -26,14 +26,14 @@
       Client: {%render_field kioskform.Client class="form-control" %}
 
       <div class='spacing1'></div>
-      <button type = "submit">Edit Station</button>
+      <button type = "submit">Save</button>
     </form>
     <div class='spacing1'></div>
 
     <form action="{% url 'analytics:delete-kiosk' pk %}" method="post" enctype="multipart/form-data">
                  {% csrf_token %}
                  <button onclick="return confirm('Are you sure you want to delete this kiosk?')"
-                 type="submit">Delete Kiosk</button>
+                 type="submit">Delete Station</button>
      </form>
     <div class="spacing1"></div>
     <a href = '{%url 'analytics:home'%}'><button>Home</button></a>

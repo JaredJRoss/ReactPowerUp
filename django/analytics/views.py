@@ -26,7 +26,7 @@ from django.contrib.auth.forms import UserCreationForm
 def signupPartner(request):
     if not request.user.groups.filter(name='Admin').exists():
         return HttpResponseRedirect(reverse('analytics:home'))
-        
+
     form = MyRegistrationForm(request.POST or None)
     if request.method == 'POST':
         print(request.POST)
@@ -218,9 +218,9 @@ def upload(request):
                         if int(port) in [9,10]:
                             p = Port.objects.create(Port=int(port), Kiosk=K, Type='USB-C')
                         elif int(port) in [5,6,7,8]:
-                            p = Port.objects.create(Port=int(port), Kiosk=K, Type='IPhone')
-                        elif int(port) in [1,2,3,4]:
                             p = Port.objects.create(Port=int(port), Kiosk=K, Type='Android')
+                        elif int(port) in [1,2,3,4]:
+                            p = Port.objects.create(Port=int(port), Kiosk=K, Type='IPhone')
                         else:
                             p = Port.objects.create(Port=int(port), Kiosk=K, Type='Other')
 

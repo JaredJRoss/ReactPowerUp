@@ -233,7 +233,7 @@ class KioskDetails(APIView):
                     total_count = temp_time.count()
                     elasped_time =  last_update - datetime.datetime.now()
                     last_update = last_update.strftime("%m/%d/%Y %I:%M:%S %p")
-                    if elasped_time.days < -20:
+                    if elasped_time.days < -5:
                         flag = True
                     else:
                         flag = False
