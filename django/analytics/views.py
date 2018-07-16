@@ -19,6 +19,46 @@ from django.http import HttpResponse
 from django.utils import timezone
 import pytz
 from pytz import timezone
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+
+
+def signupPartner(request):
+    if not request.user.groups.filter(name='Admin').exists():
+        return HttpResponseRedirect(reverse('analytics:home'))
+        
+    form = MyRegistrationForm(request.POST or None)
+    if request.method == 'POST':
+        print(request.POST)
+        if form.is_valid():
+            p = request.POST.get("Partner", None)
+            partner = Partner.objects.get(pk=p)
+            user = form.save()
+            UserToPartner.objects.create(User = user, Partner = partner)
+            group = Group.objects.get(name='Partner')
+            group.user_set.add(user)
+            return HttpResponseRedirect(reverse('analytics:home'))
+
+    return render(request, 'signupPartner.html', {'form': form})
+
+
+def signupClient(request):
+    if not request.user.groups.filter(name='Admin').exists():
+        return HttpResponseRedirect(reverse('analytics:home'))
+
+    form = MyRegistrationForm(request.POST or None)
+    if request.method == 'POST':
+        print(request.POST)
+        if form.is_valid():
+            user = form.save()
+            c = request.POST.get("Client",None)
+            client = Client.objects.get(pk = c)
+            UserToClient.objects.create(User = user, Client = client)
+            group =  Group.objects.get(name='Client')
+            group.user_set.add(user)
+            return HttpResponseRedirect(reverse('analytics:home'))
+
+    return render(request, 'signupClient.html', {'form': form})
 
 @ensure_csrf_cookie
 def edit_client(request):
@@ -197,6 +237,13 @@ def upload(request):
                         duration = round((end_date-start_date).total_seconds()/60)
 
                     Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
+                    try:
+                        days = DayCount.objects.get(Date__day = start_date.day, Date__month = start_date.month, Date__year = start_date.year)
+                        days.Count = days.Count+1
+                        days.save()
+                    except DayCount.DoesNotExist:
+                        DayCount.objects.create(Date = start_date, Count = 1)
+
             except Kiosk.DoesNotExist:
                 client = Client.objects.get(ClientName="None")
                 location = Location.objects.get(LocationName="None")
@@ -208,6 +255,13 @@ def upload(request):
                     year = '20'+date[4:6]
                     start_date = datetime.datetime.strptime(month+day+year+start,'%m%d%Y%H%M%S')
                     end_date = datetime.datetime.strptime(month+day+year+end,'%m%d%Y%H%M%S')
+                    try:
+                        day = DayCount.objects.get(Date__day = end_date.day, Date__month = end_date.month, Date__year = end_date.year)
+                        day.Count = day.Count + 1
+                        day.save()
+                    except DayCount.DoesNotExist:
+                        DayCount.objects.create(Date = end_date, Count = 1)
+
                     duration = round((end_date-start_date).total_seconds()/60)
                     Time.objects.create(Port = p,TimeIn=start_date,TimeOut=end_date,Duration=duration)
                 return HttpResponse("New kiosk made")
@@ -223,7 +277,6 @@ def filter_dates(times,GET):
     end_date = datetime.datetime.now(est)
     start_date = start_date.replace(tzinfo=None)
     end_date = end_date.replace(tzinfo =None)
-    print(start_date)
     last = GET.get("date",None)
     if last:
         if last == 'hour':
@@ -366,8 +419,7 @@ class ClientAutoComplete(autocomplete.Select2QuerySetView):
                 client = Client.objects.create(ClientName = request.POST['text'],User = myuser)
                 partner =  Partner.objects.get(User=request.user)
                 PartnerToClient.objects.create(Client=client,Partner=partner)
-                group =  Group.objects.get(name='Client')
-                group.user_set.add(myuser)
+                
                 return http.JsonResponse({
                 'id':client.pk,
                 'text':client.ClientName
@@ -427,12 +479,14 @@ class LocationAutoComplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
     #add authentication django-autocomplete light .readdocs.io
         if self.request.user.groups.filter(name='Partner').exists():
-            kiosks = PartnerToKiosk.objects.filter(Partner__PartnerName = self.request.user)
+            partner = UserToPartner.objects.get(User = self.request.user)
+            kiosks = PartnerToKiosk.objects.filter(Partner = partner)
             qs = Location.objects.filter(pk__in=kiosks.values('Kiosk__Location') ).order_by("LocationName")
         elif self.request.user.groups.filter(name='Admin').exists():
             qs = Location.objects.all().order_by("LocationName")
         elif self.request.user.groups.filter(name='Client').exists():
-            kiosks = Kiosk.objects.filter(Client__User = self.request.user)
+            client = UserToClient.objects.get(User = request.user)
+            kiosks = Kiosk.objects.filter(Client = client)
             qs = Location.objects.filter(pk__in=kiosks.values('Kiosk__Location') ).order_by("LocationName")
         else:
             qs = Location.objects.none()
@@ -444,12 +498,14 @@ class KioskAutoComplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
     #add authentication django-autocomplete light .readdocs.io
         if self.request.user.groups.filter(name='Partner').exists():
-            kiosks = PartnerToKiosk.objects.filter(Partner__PartnerName = self.request.user)
+            partner = UserToPartner.objects.get(User = self.request.user)
+            kiosks = PartnerToKiosk.objects.filter(Partner = partner)
             qs = Kiosk.objects.filter(ID__in = kiosks.values('Kiosk')).order_by('ID')
         elif self.request.user.groups.filter(name='Admin').exists():
             qs = Kiosk.objects.all().order_by("ID")
         elif self.request.user.groups.filter(name='Client').exists():
-            qs =  Kiosk.objects.filter(Client__User = self.request.user).order_by('ID')
+            client = UserToClient.objects.get(User = request.user)
+            qs =  Kiosk.objects.filter(Client = client).order_by('ID')
         else:
             qs = Kiosk.objects.none()
         if self.q:

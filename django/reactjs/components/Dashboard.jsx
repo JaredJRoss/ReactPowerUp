@@ -1,9 +1,5 @@
 import React from "react"
-import BarChart from "react-d3-components/lib/BarChart"
-import PieChart from "react-d3-components/lib/PieChart"
 import Datetime from "react-datetime"
-import ResponsiveBarChart from "../components/ResponsiveBar"
-import ResponsivePieChart from "../components/ResponsivePie"
 import HighPieChart from "../components/HighPie"
 import HighBarChart from "../components/HighBar"
 import HighBarDayChart from "../components/HighBarDay"
@@ -12,29 +8,42 @@ export default class Dashboard extends React.Component {
     constructor(props){
       super(props);
       this.state={
+        colorScale:d3.scale.ordinal().domain([0,1,2,3]).range(["gray", "green", "blue", "orange"]),
         Start:'',
         End:'',
-        colorScale:d3.scale.ordinal().domain([0,1,2,3]).range(["gray", "green", "blue", "orange"]),
+        date:'',
       };
-      fetch('/api/dash?'+this.props.search_terms+'&',{
-        credentials:'include'
-      }).then(function(response){
-        return response.json()
-      }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh,barDay:data.BarDay}));
-
+      
       this.tooltipBar = this.tooltipBar.bind(this);
       this.tooltipPie = this.tooltipPie.bind(this);
       this.HandleCustomStart = this.HandleCustomStart.bind(this);
       this.HandleCustomEnd = this.HandleCustomEnd.bind(this);
-    }
-
-    componentWillReceiveProps(nextProps){
-      fetch('/api/dash?'+nextProps.search_terms+'&',{
+      fetch('/api/dash?',{
         credentials:'include'
       }).then(function(response){
         return response.json()
       }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh,barDay:data.BarDay}));
     }
+
+    componentWillReceiveProps(nextProps){
+      if (nextProps.date ==""){
+        fetch('/api/dash?'+nextProps.search_terms+'&start='+nextProps.start+'&end='+nextProps.end,{
+          credentials:'include'
+        }).then(function(response){
+          return response.json()
+        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh,barDay:data.BarDay}));
+          this.setState({Start:nextProps.start , End: nextProps.end})
+      }
+      else{
+        fetch('/api/dash?'+nextProps.search_terms+'&date='+nextProps.date,{
+          credentials:'include'
+        }).then(function(response){
+          return response.json()
+        }).then(data => this.setState({bar:data.TimeOfDay,pie:data.TypeOfCharge,total:data.count,avg:data.avg,highBar:data.TimeOfDayHigh,highPie:data.TypeOfChargeHigh,barDay:data.BarDay}));
+        this.setState({date:nextProps.date})
+        }
+      }
+    
     HandleCustomEnd(event){
       this.setState({End:event.format("MM/DD/YYYY HH:mm:ss")})
     }

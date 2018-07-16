@@ -13,7 +13,11 @@ export default class SampleAppContainer extends React.Component {
         search_terms:'',
         url:'/api/search?',
         kiosks:[],
-        dashboard:<Dashboard search_terms={''} onUpdate={this.onUpdate.bind(this)}/>,
+        dashboard:<Dashboard start={''} end={''} date ={''} search_terms={''} onUpdate={this.onUpdate.bind(this)}/>,
+        date:'',
+        end:'',
+        start:'',
+
     };
 
     fetch('/api/search',{
@@ -22,6 +26,7 @@ export default class SampleAppContainer extends React.Component {
       return response.json()
     }).then(data => this.setState({kiosks:data}));
     this.handleSearch = this.handleSearch.bind(this);
+    this.refresh = this.refresh.bind(this);
 
   }
 
@@ -33,6 +38,15 @@ export default class SampleAppContainer extends React.Component {
     }).then(data => this.setState({kiosks:data}));
     this.setState({date:date,start:start,end:end})
 
+  }
+  refresh(event){
+    fetch(this.state.url+'&date='+this.state.date+'&start='+this.state.start+'&end='+this.state.end,{
+      credentials: 'include',
+    }).then(function(response){
+      return response.json()
+    }).then(data => this.setState({kiosks:data}));
+    this.setState({dashboard:<Dashboard date = {this.state.date} start = {this.state.start} end = {this.state.end} search_terms={this.state.search_terms} onUpdate={this.onUpdate.bind(this)} />})
+    event.preventDefault();
   }
 
   handleSearch(event) {
@@ -52,7 +66,6 @@ export default class SampleAppContainer extends React.Component {
     }
 
     url =url+search_terms;
-    console.log('Url'+url)
     this.setState({url:url,search_terms:search_terms})
 
     fetch(url+'&date='+this.state.date+'&start='+this.state.start+'&end='+this.state.end,{
@@ -61,8 +74,7 @@ export default class SampleAppContainer extends React.Component {
       return response.json()
     }).then(data => this.setState({kiosks:data}));
 
-    this.setState({dashboard:<Dashboard search_terms={search_terms} onUpdate={this.onUpdate.bind(this)} />})
-    console.log('search '+search_terms)
+    this.setState({dashboard:<Dashboard date = {this.state.date} start = {this.statestart} end = {this.state.end}  search_terms={search_terms} onUpdate={this.onUpdate.bind(this)} />})
     event.preventDefault();
   }
 
@@ -111,7 +123,7 @@ export default class SampleAppContainer extends React.Component {
                   <th>Last Charge</th>
                   <th>Total Charge</th>
                   <th>Action</th>
-                  <th>Refresh</th>
+                  <th><img style ={{height:20}} src ="/static/images/refresh.png" onClick={this.refresh}/></th>
                 </tr>
               </thead>
               <tbody className = "tbl-content">
@@ -126,6 +138,7 @@ export default class SampleAppContainer extends React.Component {
                   <td>{k.last_update}</td>
                   <td>{k.Tot}</td>
                   <td> <a href={"/edit_kiosk/"+k.ID} style={{text_decoration:"none", lineHeight:"0%"}} className="transparent_btn" >Edit</a></td>
+                  <td></td>
                   </tr>
               )}
               </tbody>

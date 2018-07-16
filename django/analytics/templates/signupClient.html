@@ -1,0 +1,32 @@
+{% extends "basePower.html" %}
+{% block content %}
+
+{% load widget_tweaks %}
+{% load static %}
+  <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/dist/js/select2.full.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+
+    <div class="spacing1"></div>
+    <h2>Sign Up</h2>
+    <form method="post">
+      {% csrf_token %}
+      Client : <select name="Client" style="display:inline-block" class="form-control" id="id_Client" data-autocomplete-light-url="/client-autocomplete/" data-autocomplete-light-function="select2"></select>
+      <div class="spacing1"></div>
+
+      {{ form.as_p }}
+      <div class="spacing1"></div>
+
+      <button type="submit">Sign up</button>
+    </form>
+    <div class="spacing1"></div>
+
+{% endblock %}

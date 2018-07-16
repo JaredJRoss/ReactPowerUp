@@ -7,8 +7,10 @@ from django.db.models import Q
 from .filters import *
 import datetime
 from .views import filter_dates
-from django.db.models import Sum
+from django.db.models import Sum, Count
 import pytz
+from django.db.models.functions import Trunc
+
 
 # Serializers define the API representation.
 class TimeSerializer(serializers.HyperlinkedModelSerializer):
@@ -122,11 +124,16 @@ def TimeOfDayHigh(times):
         val.append(times.filter(TimeOut__hour=i).count())
     return val
 
+#Does not filter right now
 def DayBarHigh(times):
     val = []
-    query_set = DayCount.objects.all().order_by('-Date').reverse()
+    query_set = times.annotate(day = Trunc('TimeOut','day'))\
+    .values('day')\
+    .annotate(c=Count('pk'))\
+    .values('day','c').order_by('day')
+    
     for count in query_set:
-        val.append([str(count.Date.year)+"-"+str(count.Date.month)+"-"+str(count.Date.day),count.Count])
+        val.append([str(count['day'].year)+"-"+str(count['day'].month)+"-"+str(count['day'].day),count['c']])
     return val
 
 def TypeOfChargePieHigh(ports,times):
@@ -170,14 +177,16 @@ class Dashboard(APIView):
         if request.user.groups.filter(name='Admin').exists():
             qs = Kiosk.objects.all()
         elif request.user.groups.filter(name='Partner').exists():
-            clients = PartnerToClient.objects.filter(Partner__User=request.user)
+            partner = UserToPartner.objects.get(User = request.user)
+            clients = PartnerToClient.objects.filter(Partner=partner.Partner)
             qs = Kiosk.objects.filter(Client__in = clients.values('Client'))
         elif request.user.groups.filter(name='Client').exists():
-            qs = Kiosk.objects.filter(Client__User = request.user)
+            client = UserToClient.objects.get(User = request.user)
+            qs = Kiosk.objects.filter(Client = client.Client)
         else:
             qs = Kiosk.objects.none()
         kioskFilter = KioskFilter(request.GET,qs)
-        ports = Port.objects.filter(Kiosk__in =kioskFilter.qs)
+        ports = Port.objects.filter(Kiosk__in = kioskFilter.qs)
         times = Time.objects.filter(Port__in = ports)
         times = filter_dates(times,request.GET)
         val['count'] = times.count()
@@ -196,17 +205,17 @@ class KioskDetails(APIView):
     renderer_classes = (JSONRenderer, )
     queryset = Kiosk.objects.all()
     def get(self,request,format=None):
-
-        print('request',request.GET)
         partner = False
         client = False
         admin = False
         kID = request.GET.get('ID',None)
         kiosk = Kiosk.objects.get(ID=kID)
         if request.user.groups.filter(name='Partner').exists():
-            partner = PartnerToKiosk.objects.get(Partner__User = request.user, Kiosk= kiosk)
+            p = UserToPartner.objects.get(User = request.user)
+            partner = PartnerToKiosk.objects.get(Partner = p.Partner, Kiosk= kiosk)
         elif request.user.groups.filter(name='Client').exists():
-            client  = request.user == kiosk.Client.User
+            c = UserToClient.objects.get(User = request.user)
+            client  = c.Client == kiosk.Client
         elif request.user.groups.filter(name='Admin').exists():
             admin = True
         else:
@@ -241,17 +250,17 @@ class Search(APIView):
     queryset = Kiosk.objects.all()
     def get(self,request,format=None):
         arr = []
-        print('User:',request.user)
         if request.user.groups.filter(name='Admin').exists():
             qs = Kiosk.objects.all()
         elif request.user.groups.filter(name='Partner').exists():
-            clients = PartnerToKiosk.objects.filter(Partner__User=request.user)
+            partner = UserToPartner.objects.get(User = request.User)
+            clients = PartnerToKiosk.objects.filter(Partner=partner.Partner)
             qs = Kiosk.objects.filter(ID__in = clients.values('Kiosk_id'))
         elif request.user.groups.filter(name='Client').exists():
-            qs = Kiosk.objects.filter(Client__User = request.user)
+            client = UserToClient.objects.get(User = request.user)
+            qs = Kiosk.objects.filter(Client = client.Client)
         else:
             qs = Kiosk.objects.none()
-        print(qs)
         kioskFilter = KioskFilter(request.GET,qs)
         for kiosk in kioskFilter.qs:
             k = {}

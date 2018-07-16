@@ -6,13 +6,17 @@ class ServerTest(models.Model):
     def __str__(self):
         return self.Test
     Test = models.CharField(name="Test",max_length=1000)
+
 #Partners own Kiosks which they rent to clients
 class Partner(models.Model):
     def __str__(self):
         return self.PartnerName
 
     PartnerName = models.CharField(name = "PartnerName",max_length = 150)
+
+class UserToPartner(models.Model):
     User = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+    Partner = models.ForeignKey(Partner,on_delete = models.CASCADE)    
 #Keep Track of clients who are using kiosks
 class Client(models.Model):
     def __str__(self):
@@ -20,8 +24,9 @@ class Client(models.Model):
 
     ClientName = models.CharField(name = "ClientName", max_length=150,unique=True)
     Logo = models.FileField(upload_to='logo',blank=True,null=True)
+class UserToClient(models.Model):
     User = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
-
+    Client = models.ForeignKey(Client,on_delete = models.CASCADE)
 #Catergories for type of clients for search purposes
 class Catergories(models.Model):
     def __str__(self):
@@ -107,8 +112,9 @@ class ClientToType(models.Model):
         return "Client:"+self.Client.ClientName + " has type "+self.Type.Type
     Type = models.ForeignKey(Catergories ,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client ,on_delete=models.CASCADE)
+    
 class DayCount(models.Model):
     def __str__(self):
         return "Date "+str(self.Date)+ " Count" + str(self.Count)
     Date = models.DateTimeField(verbose_name="Date")
-    Count = models.IntegerField(verbose_name="Count")    
+    Count = models.IntegerField(verbose_name="Count")
