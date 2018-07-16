@@ -233,6 +233,7 @@ class KioskDetails(APIView):
                     total_count = temp_time.count()
                     elasped_time =  last_update - datetime.datetime.now()
                     last_update = last_update.strftime("%m/%d/%Y %I:%M:%S %p")
+                    print(elasped_time.days)
                     if elasped_time.days < -5:
                         flag = True
                     else:
@@ -274,7 +275,7 @@ class Search(APIView):
             try:
                 last = times.latest('TimeOut').TimeOut
                 k['last_update'] = last.strftime("%m/%d")
-                if (datetime.datetime.now().replace(tzinfo=None)-last.replace(tzinfo=None)).days > 50:
+                if (datetime.datetime.now().replace(tzinfo=None)-last.replace(tzinfo=None)).days > 5:
                     k['online'] = False
                 else:
                     k['online'] = True
