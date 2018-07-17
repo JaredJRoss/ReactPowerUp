@@ -17,7 +17,7 @@ export default class Dashboard extends React.Component {
       this.tooltipPie = this.tooltipPie.bind(this);
       this.HandleCustomStart = this.HandleCustomStart.bind(this);
       this.HandleCustomEnd = this.HandleCustomEnd.bind(this);
-      fetch('/api/dash?',{
+      fetch('/api/dash?'+props.search_terms,{
         credentials:'include'
       }).then(function(response){
         return response.json()
