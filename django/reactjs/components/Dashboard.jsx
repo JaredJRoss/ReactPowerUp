@@ -8,7 +8,6 @@ export default class Dashboard extends React.Component {
     constructor(props){
       super(props);
       this.state={
-        colorScale:d3.scale.ordinal().domain([0,1,2,3]).range(["gray", "green", "blue", "orange"]),
         Start:'',
         End:'',
         date:'',

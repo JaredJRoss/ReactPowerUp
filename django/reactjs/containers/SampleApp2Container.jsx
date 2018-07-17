@@ -33,7 +33,7 @@ export default class SampleApp2Container extends React.Component {
         <h1><img style={{height:'25px'}} src="/static/images/Green_sphere.png"/> <span>Station {this.props.kiosk} Details</span></h1>
         :<h1><img style={{height:'25px'}} src="/static/images/Red_sphere.png"/> <span>Station  {this.props.kiosk} Details</span></h1>
       }
-      <div class="spacing1"> </div>
+      <div className="spacing1"> </div>
       {this.state.dashboard}
       <div className="spacing2"> </div>
       <div className="tbl-header">
