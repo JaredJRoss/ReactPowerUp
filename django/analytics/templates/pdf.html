@@ -1,0 +1,33 @@
+
+{% extends "basePower.html" %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+{% block content %}
+
+<style type="text/css">
+    @page {
+        size: A4;
+        margin: 1cm;
+    }
+</style>   
+
+<script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/select2.css' %}" />
+<script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+<script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
+<script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" />
+<script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/dist/js/select2.full.js' %}"></script>
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<script>
+var user = "{{user}}";
+</script>
+
+<div id="PDF"></div>
+{% csrf_token %}
+{% render_bundle 'vendors' %}
+{% render_bundle 'PDF' %}
+
+<div class="spacing1"> </div><div class="spacing1"> </div><div class="spacing1"> </div><div class="spacing1"> </div>
+PDF
+{% endblock %}

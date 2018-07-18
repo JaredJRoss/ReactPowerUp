@@ -17,6 +17,7 @@
     "react-d3-components": "^0.8.0",
     "react-datetime": "^2.14.0",
     "react-dom": "^0.14.7",
+    "react-pdf": "^3.0.5",
     "react-redux": "^4.4.0",
     "redux": "^3.3.1",
     "redux-thunk": "^1.0.3"

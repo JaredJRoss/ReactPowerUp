@@ -32,7 +32,7 @@ urlpatterns=[
     url(r'^location-autocomplete/$',LocationAutoComplete.as_view(create_field='LocationName'), name='location-autocomplete', ),
     url(r'^kiosk-autocomplete/$',KioskAutoComplete.as_view(), name='kiosk-autocomplete', ),
     url(r'^type-autocomplete/$',TypeAutoComplete.as_view(create_field='Type'), name='type-autocomplete', ),
-    url(r'^partner-autocomplete/$',PartnerAutoComplete.as_view(), name='partner-autocomplete', ),
+    url(r'^partner-autocomplete/$',PartnerAutoComplete.as_view(create_field='PartnerName'), name='partner-autocomplete', ),
     url(r'^api/', include(router.urls)),
     url(r'^api/search$', Search.as_view(), name='search'),
     url(r'^api/dash$', Dashboard.as_view(), name='dash'),
@@ -43,5 +43,6 @@ urlpatterns=[
     url(r'^logout/$', auth_views.logout, {'next_page': 'analytics:login'},name='logout'),
     url(r'^signupPartner/$', signupPartner, name='signupPartner'),
     url(r'^signupClient/$', signupClient, name='signupClient'),
+    url(r'^pdf/$',pdf,name="pdf"),
 
 ]

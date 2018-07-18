@@ -22,6 +22,11 @@ from pytz import timezone
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+import xhtml2pdf.pisa as pisa
+
 
 def signupPartner(request):
     if not request.user.groups.filter(name='Admin').exists():
@@ -29,10 +34,13 @@ def signupPartner(request):
 
     form = MyRegistrationForm(request.POST or None)
     if request.method == 'POST':
-        print(request.POST)
         if form.is_valid():
             p = request.POST.get("Partner", None)
-            partner = Partner.objects.get(pk=p)
+            print(p)
+            try:
+                partner = Partner.objects.get(pk=p)
+            except Partner.DoesNotExist:
+                partner = Partner.objects.create(PartnerName = p)    
             user = form.save()
             UserToPartner.objects.create(User = user, Partner = partner)
             group = Group.objects.get(name='Partner')
@@ -188,6 +196,21 @@ def mainpage(request):
     else:
         return HttpResponseRedirect(reverse('analytics:login'))
 
+
+
+
+@ensure_csrf_cookie
+def pdf(request):
+    if request.user.is_authenticated:
+        context={
+        'user':request.user.username
+        }
+        print(context)
+        return render(request,'pdf.html',context)
+    else:
+        return HttpResponseRedirect(reverse('analytics:login'))
+
+    
 #Takes a get request and parses the time in and out of each port kiosk combo
 @csrf_exempt
 def upload(request):
@@ -414,23 +437,9 @@ class ClientAutoComplete(autocomplete.Select2QuerySetView):
     def post(self,request):
         print('User',request)
         if request.user.is_authenticated:
-            if request.user.groups.filter(name='Partner').exists():
-                myuser = User.objects.create_user(request.POST['text'],'','password',is_staff=True)
-                client = Client.objects.create(ClientName = request.POST['text'],User = myuser)
-                partner =  Partner.objects.get(User=request.user)
-                PartnerToClient.objects.create(Client=client,Partner=partner)
-                
-                return http.JsonResponse({
-                'id':client.pk,
-                'text':client.ClientName
-                })
-            elif request.user.groups.filter(name='Admin').exists():
-                myuser = User.objects.create_user(request.POST['text'],'','password',is_staff=True)
-                client = Client.objects.create(ClientName = request.POST['text'],User = myuser)
-                group =  Group.objects.get(name='Client')
-                group.user_set.add(myuser)
-                return http.JsonResponse({
-                'id':client.pk,
+            if request.user.groups.filter(name='Admin').exists():
+                client = Client.objects.create(ClientName = request.POST['text'])
+                return http.JsonResponse({'id':client.pk,
                 'text':client.ClientName
                 })
             else:
@@ -519,6 +528,12 @@ class TypeAutoComplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(Type__icontains=self.q)
         return qs
 class PartnerAutoComplete(autocomplete.Select2QuerySetView):
+    def post(self,request):
+        partner = Partner.objects.create(PartnerName = request.POST['text'])
+        return http.JsonResponse({
+                'id':partner.pk,
+                'text':partner.PartnerName
+                })
     def get_queryset(self):
         if self.request.user.groups.filter(name='Admin').exists():
             qs = Partner.objects.all().order_by("PartnerName")

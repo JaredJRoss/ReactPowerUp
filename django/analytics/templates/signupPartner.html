@@ -19,7 +19,7 @@
     <h2>Sign Up</h2>
     <form method="post">
       {% csrf_token %}
-      Partner : <select name="Partner" style="display:inline-block" class="form-control" id="id_Partner" data-autocomplete-light-url="/partner-autocomplete/" data-autocomplete-light-function="select2"></select>
+      Partner: <select name="Partner" style="display:inline-block" class="form-control" id="id_Partner" data-autocomplete-light-url="/partner-autocomplete/" data-autocomplete-light-function="select2"></select>
       <div class="spacing1"></div>
 
       {{ form.as_p }}

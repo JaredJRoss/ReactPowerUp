@@ -46,6 +46,7 @@ export default class SampleAppContainer extends React.Component {
       return response.json()
     }).then(data => this.setState({kiosks:data}));
     this.setState({dashboard:<Dashboard date = {this.state.date} start = {this.state.start} end = {this.state.end} search_terms={this.state.search_terms} onUpdate={this.onUpdate.bind(this)} />})
+    alert("Refreshed")
     event.preventDefault();
   }
 

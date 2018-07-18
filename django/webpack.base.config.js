@@ -9,6 +9,7 @@ module.exports = {
     // Add as many entry points as you have container-react-components here
     SampleApp: './reactjs/SampleApp',
     SampleApp2: './reactjs/SampleApp2',
+    PDF:'./reactjs/PDF',
     vendors: ['react'],
   },
 
