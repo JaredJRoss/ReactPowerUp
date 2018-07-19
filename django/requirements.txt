@@ -26,6 +26,7 @@ docutils==0.14
 entrypoints==0.2.3
 Fabric3==1.14.post1
 html5lib==1.0.1
+httplib2==0.11.3
 idna==2.6
 ipykernel==4.8.2
 ipython==6.3.1
@@ -51,17 +52,22 @@ parso==0.1.1
 pathspec==0.5.5
 pexpect==4.4.0
 pickleshare==0.7.4
+Pillow==5.2.0
+pkg-resources==0.0.0
 prompt-toolkit==1.0.15
 ptyprocess==0.5.2
 pyasn1==0.4.2
 pycparser==2.18
 Pygments==2.2.0
 PyNaCl==1.2.1
+pyPdf==1.13
+PyPDF2==1.26.0
 python-dateutil==2.6.1
 pytz==2017.3
 PyYAML==3.12
 pyzmq==17.0.0
 qtconsole==4.3.1
+reportlab==3.5.1
 requests==2.9.1
 semantic-version==2.5.0
 Send2Trash==1.5.0
@@ -77,3 +83,4 @@ wcwidth==0.1.7
 webencodings==0.5.1
 websocket-client==0.46.0
 widgetsnbextension==3.2.1
+xhtml2pdf==0.2.2
