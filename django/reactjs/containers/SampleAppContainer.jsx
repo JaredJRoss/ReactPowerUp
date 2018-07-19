@@ -124,7 +124,7 @@ export default class SampleAppContainer extends React.Component {
                   <th>Last Charge</th>
                   <th>Total Charge</th>
                   <th>Action</th>
-                  <th><img style ={{height:20}} src ="/static/images/refresh.png" onClick={this.refresh}/></th>
+                  <th><img title={"Refresh"} style ={{height:20}} src ="/static/images/refresh.png" onClick={this.refresh}/></th>
                 </tr>
               </thead>
               <tbody className = "tbl-content">

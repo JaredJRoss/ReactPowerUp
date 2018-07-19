@@ -84,7 +84,7 @@ export default class Dashboard extends React.Component {
           <tr>
             <td>
               <h3 style={{textAlign:'center'}}>Dwell Time<div className="spacing1"> </div>
-                                              {this.state.avg}</h3>
+                                              {this.state.avg} Minutes</h3>
             </td>
             <td>
               <h3 style={{textAlign:'center'}}>Total Charges<div className="spacing1"></div>

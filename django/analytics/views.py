@@ -34,6 +34,7 @@ def signupPartner(request):
 
     form = MyRegistrationForm(request.POST or None)
     if request.method == 'POST':
+        print("FORM",form.errors)
         if form.is_valid():
             p = request.POST.get("Partner", None)
             print(p)
