@@ -1,0 +1,40 @@
+{% extends "basePower.html" %}
+{% block content %}
+
+{% load widget_tweaks %}
+{% load static %}
+  <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+    <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" />
+    <script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/dist/js/select2.full.js' %}"></script>
+    <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+
+    <div class="spacing1"></div>
+    <h2>Add a Partner</h2>
+    <div class="spacing1"></div>
+    <form method="POST" class="post-form">
+      {% csrf_token %}
+      Location: {%render_field locationform.LocationName class="form-control" %}
+      <div class='spacing1'></div>
+      Address: {%render_field locationform.Address class="form-control" %}
+      <div class='spacing1'></div>
+      City: {%render_field locationform.City class="form-control" %}
+      <div class='spacing1'></div>
+      State: {%render_field locationform.State class="form-control" %}
+      <div class='spacing1'></div>
+      Zip: {%render_field locationform.Zip class="form-control" %}
+      <div class='spacing1'></div>
+      <button type = "submit">Add a New Location</button>
+    </form>
+    <div class="spacing1"></div>
+
+    <a href = '{%url 'analytics:home'%}'><button>Home</button></a>
+    <div class="spacing1"></div>
+    <div class="spacing1"></div>
+
+    {% endblock %}

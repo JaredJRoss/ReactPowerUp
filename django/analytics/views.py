@@ -21,11 +21,13 @@ import pytz
 from pytz import timezone
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
+from django.db.models.functions import Trunc
+from django.db.models import Sum, Count
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
-from io import BytesIO
-from django.http import HttpResponse
-from django.template.loader import get_template
-import xhtml2pdf.pisa as pisa
+#pdf
+from .render import Render
 
 
 def signupPartner(request):
@@ -47,9 +49,20 @@ def signupPartner(request):
             group = Group.objects.get(name='Partner')
             group.user_set.add(user)
             return HttpResponseRedirect(reverse('analytics:home'))
-
     return render(request, 'signupPartner.html', {'form': form})
 
+def signupAdmin(request):
+    if not request.user.groups.filter(name='Admin').exists():
+        return HttpResponseRedirect(reverse('analytics:home'))
+
+    form = MyRegistrationForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            user = form.save()
+            group = Group.objects.get(name='Admin')
+            group.user_set.add(user)
+            return HttpResponseRedirect(reverse('analytics:home'))
+    return render(request, 'signupAdmin.html', {'form': form})
 
 def signupClient(request):
     if not request.user.groups.filter(name='Admin').exists():
@@ -96,57 +109,55 @@ def edit_client(request):
 
 @ensure_csrf_cookie
 def edit_location(request):
-    print(request.POST)
-    if request.user.is_authenticated and (request.user.groups.filter(name='Admin').exists() or request.user.groups.filter(name='Partner').exists()):
-        form = False
-        query_set = Kiosk.objects.none()
-        kioskFilter  = KioskFilter(request.GET,query_set)
-        clientform = ClientForm(request.POST or None)
-        new_L_name =  request.POST.get('LocationName',None)
-        new_address =  request.POST.get('Address',None)
-        location = request.POST.get('Location',None)
-        if new_L_name and location:
-            l = Location.objects.get(pk=location)
-            l.LocationName = new_L_name
-            if new_address:
-                l.Address = new_address
-            l.save()
-            form = True
-        if form:
-            HttpResponseRedirect(reverse('analytics:editLocation'))
-        context ={
-        'clientform':clientform,
-        'filter':kioskFilter,
-        }
-        return render(request,'editLocation.html',context)
+         
+    if request.user.is_authenticated and (request.user.groups.filter(name='Admin').exists() or request.user.groups.filter(name='Partner').exists()):       
+        
+        l = request.POST.get('Location',None)
+        
+        if l:
+            location = Location.objects.get(pk = l)
+            locationform = LocationForm(data = request.POST,instance = location)
+
+            if locationform.is_valid():
+                l = locationform.save()
+                return HttpResponseRedirect(reverse('analytics:home'))
+            context ={
+            'locationform':locationform,
+            } 
+        
+            return render(request,'editLocation.html',context)
+        else:
+            locationform = LocationForm(data = request.POST)
+            context ={
+            'locationform':locationform,
+            } 
+        
+            return render(request,'editLocation.html',context)
     else:
         return HttpResponseRedirect(reverse('analytics:home'))
 
 @ensure_csrf_cookie
 def edit_partner(request):
-    print(request.POST)
     if request.user.is_authenticated and (request.user.groups.filter(name='Admin').exists() or request.user.groups.filter(name='Partner').exists()):
-        form = False
-        query_set = Kiosk.objects.none()
-        kioskFilter  = KioskFilter(request.GET,query_set)
-        clientform = ClientForm(request.POST or None)
         new_P_name = request.POST.get('PartnerName',None)
         partner =  request.POST.get('Partner',None)
-        if new_P_name and partner:
+        client = request.POST.get('Client',None)
+        print(request.POST)
+        if partner:
             p = Partner.objects.get(pk=partner)
-            p.PartnerName = new_P_name
-            p.save()
-            form = True
-        if form:
-            HttpResponseRedirect(reverse('analytics:editPartner'))
-        context ={
-        'clientform':clientform,
-        'filter':kioskFilter,
-        }
-        return render(request,'editPartner.html',context)
+            if new_P_name:
+                p.PartnerName = new_P_name
+                p.save()
+                return HttpResponseRedirect(reverse('analytics:home'))
+            if client:
+                c = Client.objects.get(pk = client)
+                PartnerToClient.objects.create(Partner = p, Client = c)    
+                return render(request,'editPartner.html')
+            return render(request,'editPartner.html')
+
+        return render(request,'editPartner.html')
     else:
         return HttpResponseRedirect(reverse('analytics:home'))
-
 
 def edit_kiosk(request,pk):
     if request.user.is_authenticated:
@@ -170,6 +181,27 @@ def deleteKiosk(request,pk):
             kiosk.delete()
             return HttpResponseRedirect(reverse('analytics:home'))
 
+def deletePartner(request,pk):
+    if request.user.is_authenticated and  request.user.groups.filter(name='Admin').exists():
+        partner = Partner.objects.get(pk=pk)
+        partner.delete()
+        return HttpResponseRedirect(reverse('analytics:home'))
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))
+def deleteClient(request,pk):
+    if request.user.is_authenticated and  request.user.groups.filter(name='Admin').exists():
+        client = Client.objects.get(pk=pk)
+        client.delete()
+        return HttpResponseRedirect(reverse('analytics:home'))
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))
+def deleteLocation(request,pk):
+    if request.user.is_authenticated and  request.user.groups.filter(name='Admin').exists():
+        location = Location.objects.get(pk=pk)
+        location.delete()
+        return HttpResponseRedirect(reverse('analytics:home'))
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))        
 def edit_port(request,pk):
     if request.user.is_authenticated:
         port = Port.objects.get(pk=pk)
@@ -197,20 +229,148 @@ def mainpage(request):
     else:
         return HttpResponseRedirect(reverse('analytics:login'))
 
+def kiosk_info(request):
+    arr = []
+    if request.user.groups.filter(name='Admin').exists():
+        qs = Kiosk.objects.all()
+    elif request.user.groups.filter(name='Partner').exists():
+        partner = UserToPartner.objects.get(User = request.User)
+        clients = PartnerToKiosk.objects.filter(Partner=partner.Partner)
+        qs = Kiosk.objects.filter(ID__in = clients.values('Kiosk_id'))
+    elif request.user.groups.filter(name='Client').exists():
+        client = UserToClient.objects.get(User = request.user)
+        qs = Kiosk.objects.filter(Client = client.Client)
+    else:
+        qs = Kiosk.objects.none()
+    kioskFilter = KioskFilter(request.GET,qs)
+    for kiosk in kioskFilter.qs:
+        k = {}
+        k['ID'] = kiosk.ID
+        k['Client'] = kiosk.Client.ClientName
+        k['Loc'] = kiosk.Location.LocationName
+        ports = Port.objects.filter(Kiosk = kiosk)
+        times = Time.objects.filter(Port__in = ports)
+        times = filter_dates(times,request.GET)
+        k['Tot'] = times.count()
+        try:
+            last = times.latest('TimeOut').TimeOut
+            k['last_update'] = last.strftime("%m/%d")
+            if (datetime.datetime.now().replace(tzinfo=None)-last.replace(tzinfo=None)).days > 5:
+                k['online'] = False
+            else:
+                k['online'] = True
+        except Time.DoesNotExist:
+            k['last_update'] = None
+            k['online'] = False
+        arr.append(k)
+    return arr
 
+def TimeOfDayHigh(times):
+    val = []
+    for i in range(0,24):
+        val.append(times.filter(TimeOut__hour=i).count())
+    return val
+
+#Does not filter right now
+def DayBarHigh(times):
+    val = []
+    query_set = times.annotate(day = Trunc('TimeOut','day'))\
+    .values('day')\
+    .annotate(c=Count('pk'))\
+    .values('day','c').order_by('day')
+    
+    for count in query_set:
+        val.append([str(count['day'].year)+"-"+str(count['day'].month)+"-"+str(count['day'].day),count['c']])
+    return val
+
+def TypeOfChargePieHigh(ports,times):
+    a = ports.filter(Type='Android')
+    i = ports.filter(Type='IPhone')
+    u = ports.filter(Type='USB-C')
+    o = ports.filter(Type='Other')
+    android = times.filter(Port__in =a)
+    iphone =  times.filter(Port__in =i)
+    usbc =  times.filter(Port__in =u)
+    other =  times.filter(Port__in =o)
+    total = iphone.count()+android.count()+usbc.count()+other.count()
+    try:
+        a_percent = str(int(100*(android.count()/total)))
+    except ZeroDivisionError:
+        a_percent=str(0)
+    try:
+        i_percent = str(int(100*(iphone.count()/total)))
+    except ZeroDivisionError:
+        i_percent=str(0)
+    try:
+        u_percent = str(int(100*(usbc.count()/total)))
+    except ZeroDivisionError:
+        u_percent=str(0)
+    try:
+        o_percent = str(int(100*(other.count()/total)))
+    except ZeroDivisionError:
+        o_percent=str(0)
+    if total ==0:
+        val = [{'name':'No Charges','y':100}]
+    else:
+        val = [{'name':'Android','y':100*(android.count()/total)},{'name':'Apple','y':100*(iphone.count()/total)},\
+        {'name':'USB-C','y':100*(usbc.count()/total)},{'name':'Other','y':100*(other.count()/total)}]
+    return val
+
+
+def dashboardData(request):
+    val = {}
+    if request.user.groups.filter(name='Admin').exists():
+        qs = Kiosk.objects.all()
+    elif request.user.groups.filter(name='Partner').exists():
+        partner = UserToPartner.objects.get(User = request.user)
+        clients = PartnerToClient.objects.filter(Partner=partner.Partner)
+        qs = Kiosk.objects.filter(Client__in = clients.values('Client'))
+    elif request.user.groups.filter(name='Client').exists():
+        client = UserToClient.objects.get(User = request.user)
+        qs = Kiosk.objects.filter(Client = client.Client)
+    else:
+        qs = Kiosk.objects.none()
+    kioskFilter = KioskFilter(request.GET,qs)
+    ports = Port.objects.filter(Kiosk__in = kioskFilter.qs)
+    times = Time.objects.filter(Port__in = ports)
+    times = filter_dates(times,request.GET)
+    val['count'] = times.count()
+    try:
+        val['avg'] = int(times.aggregate(Sum('Duration'))['Duration__sum']/times.count())
+    except TypeError:
+        val['avg'] = 0
+    val['TimeOfDayHigh'] = TimeOfDayHigh(times)
+    val['TypeOfChargeHigh'] = TypeOfChargePieHigh(ports,times)
+    val['BarDay'] = DayBarHigh(times)
+    return val
 
 
 @ensure_csrf_cookie
 def pdf(request):
     if request.user.is_authenticated:
         context={
-        'user':request.user.username
+        'user':request.user.username,
+        'table':kiosk_info(request),
+        'dashboard':dashboardData(request),
         }
         print(context)
-        return render(request,'pdf.html',context)
+        return Render.render('pdf.html',context)
     else:
         return HttpResponseRedirect(reverse('analytics:login'))
-
+def testPdf(request):
+    print(request.GET)
+    dashboard = dashboardData(request)
+    context={
+        'user':request.user.username,
+        'table':kiosk_info(request),
+        'pie':json.dumps(dashboard['TypeOfChargeHigh'], cls=DjangoJSONEncoder),
+        'barDay':json.dumps(dashboard['BarDay'], cls=DjangoJSONEncoder),
+        'barTime':dashboard['TimeOfDayHigh'],
+        'count':dashboard['count'],
+        'avg':dashboard['avg']
+        }
+    #return Render.render('pdf_actual.html',context)
+    return render(request,'pdf_actual.html',context)
     
 #Takes a get request and parses the time in and out of each port kiosk combo
 @csrf_exempt
@@ -324,6 +484,16 @@ def filter_dates(times,GET):
     return times.filter(TimeIn__range=(start_date,end_date))
 
 
+def resetKiosk(request,pk):
+    print(pk)
+    if request.user.is_authenticated and request.user.groups.filter(name='Admin').exists():
+        kiosk = Kiosk.objects.get(pk = pk)
+        ports = Port.objects.filter(Kiosk = kiosk)
+        times = Time.objects.filter(Port__in = ports)
+        times.delete()
+        return HttpResponseRedirect(reverse('analytics:kiosk',args = (pk,)))
+    else:
+        return HttpResponseRedirect(reverse('analytics:home')) 
 @ensure_csrf_cookie
 def kiosk_view(request,pk):
     if request.user.is_authenticated:
@@ -408,6 +578,18 @@ def make_partner(request):
 
 
 @ensure_csrf_cookie
+def make_location(request):
+    if request.user.is_authenticated and request.user.groups.filter(name='Admin').exists():
+        locationform = LocationForm(request.POST or None)
+        print(locationform.fields)
+        if locationform.is_valid():
+            location = locafieldsve()
+            return HttpResponseRedirect(reverse('analytics:home'))
+
+        return render(request,'new_location.html',{'locationform':locationform})
+    else:
+        return HttpResponseRedirect(reverse('analytics:home'))
+@ensure_csrf_cookie
 def make_kiosk(request):
     if request.user.is_authenticated and not request.user.groups.filter(name='Client').exists():
         if request.user.groups.filter(name='Client').exists():
@@ -467,25 +649,11 @@ class ClientAutoComplete(autocomplete.Select2QuerySetView):
 class LocationAutoComplete(autocomplete.Select2QuerySetView):
     def post(self,request):
         if self.request.user.is_authenticated:
-            reg = re.compile('\d{5}')
-            reg_name = re.compile('(^[a-zA-Z ]*)')
-            z = reg.search(request.POST['text'])
-            if z:
-                name = reg_name.search(request.POST['text']).group(0)
-                try:
-                    loc = Location.objects.get(LocationName = name)
-                except Location.DoesNotExist:
-                    loc = Location.objects.create(Address = z.group(0), LocationName=name)
-                return http.JsonResponse({
-                'id':loc.pk,
-                'text':loc.LocationName
-                })
-            else:
-                print('no zip')
-                return http.JsonResponse({
-                'id':-1,
-                'text':'Add a zipcode'
-                })
+            loc = Location.objects.create(Address = z.group(0), LocationName=name)
+            return http.JsonResponse({
+            'id':loc.pk,
+            'text':loc.LocationName
+            })
     def get_queryset(self):
     #add authentication django-autocomplete light .readdocs.io
         if self.request.user.groups.filter(name='Partner').exists():
@@ -530,11 +698,12 @@ class TypeAutoComplete(autocomplete.Select2QuerySetView):
         return qs
 class PartnerAutoComplete(autocomplete.Select2QuerySetView):
     def post(self,request):
-        partner = Partner.objects.create(PartnerName = request.POST['text'])
-        return http.JsonResponse({
-                'id':partner.pk,
-                'text':partner.PartnerName
-                })
+        if self.request.user.is_authenticated and self.request.user.groups.filter(name='Admin').exists():
+            partner = Partner.objects.create(PartnerName = request.POST['text'])
+            return http.JsonResponse({
+                    'id':partner.pk,
+                    'text':partner.PartnerName
+                    })
     def get_queryset(self):
         if self.request.user.groups.filter(name='Admin').exists():
             qs = Partner.objects.all().order_by("PartnerName")

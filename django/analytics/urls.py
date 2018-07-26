@@ -20,14 +20,19 @@ app_name = 'analytics'
 urlpatterns=[
     url(r'^upload/$',upload, name='upload',),
     url(r'^$',mainpage,name='home'),
+    url(r'add_location',make_location,name="addLocation"),
     url(r'add_kiosk/$',make_kiosk, name='add_kiosk'),
     url(r'add_partner/$', make_partner, name='add_partner'),
     url(r'edit_port/(?P<pk>\d+)$',edit_port,name='edit_port'),
     url(r'edit_kiosk/(?P<pk>\d+)$',edit_kiosk,name='edit_kiosk'),
+    url(r'reset_kisok/(?P<pk>\d+)/$',resetKiosk,name="reset_kiosk"),
     url(r'editClient/$',edit_client,name='editClient'),
     url(r'editLocation/$',edit_location,name='editLocation'),
     url(r'editPartner/$',edit_partner,name='editPartner'),
     url(r'delete-kiosk/(?P<pk>\d+)/$',deleteKiosk,name='delete-kiosk'),
+    url(r'delete-partner/(?P<pk>\d+)/$',deletePartner,name='delete-partner'),
+    url(r'delete-location/(?P<pk>\d+)/$',deleteLocation,name='delete-location'),
+    url(r'delete-client/(?P<pk>\d+)/$',deleteClient,name='delete-client'),
     url(r'^client-autocomplete/$',ClientAutoComplete.as_view(create_field='ClientName'), name='client-autocomplete', ),
     url(r'^location-autocomplete/$',LocationAutoComplete.as_view(create_field='LocationName'), name='location-autocomplete', ),
     url(r'^kiosk-autocomplete/$',KioskAutoComplete.as_view(), name='kiosk-autocomplete', ),
@@ -43,6 +48,8 @@ urlpatterns=[
     url(r'^logout/$', auth_views.logout, {'next_page': 'analytics:login'},name='logout'),
     url(r'^signupPartner/$', signupPartner, name='signupPartner'),
     url(r'^signupClient/$', signupClient, name='signupClient'),
-    url(r'^pdf/$',pdf,name="pdf"),
+    url(r'^signupAdmin/$', signupAdmin, name='signupAdmin'),
+    url(r'^pdf/test/$',pdf,name="pdf"),
+    url(r'pdf/',testPdf,name="test")
 
 ]

@@ -1,0 +1,223 @@
+<html>
+{% load static %}
+<head>
+
+
+<style>
+    #barDay {
+        min-width: 310px;
+        max-width: 100%;
+        height: 400px;
+        margin: 0 auto
+    }
+    #barTime {
+        min-width: 310px;
+        max-width: 100%;
+        height: 400px;
+        margin: 0 auto
+    }
+</style>
+<link rel="stylesheet"type="text/css" href="{% static 'css/base.css' %}">
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+</head>
+<body>
+    
+    <div id="barDay"></div>
+    <div id = "pieChart"></div>
+    <div id = "barTime"></div>
+    <table >
+        <tr>
+            <td colspan=2>
+            <table class="table-responsive-lg">
+                    <thead class ="tbl-header">
+                    <tr>
+                        <th>Online</th>
+                        <th>Station</th>
+                        <th>Client</th>
+                        <th>Location</th>
+                        <th>Last Charge</th>
+                        <th>Total Charge</th>
+                    </tr>
+                    </thead>
+                    <tbody class="tbl-content">
+                    {% for k in table %}
+                        <tr>
+                            <td>
+                            {%if k.online%}
+                                <img height="10" src="http://127.0.0.1:8000/static/images/Green_sphere.png"/>
+                            {%else%}
+                            <img height="10" src="http://127.0.0.1:8000/static/images/Red_sphere.png"/>
+                            {%endif%}
+                            </td>
+                            <td>{{k.ID}}</td>
+                            <td>{{k.Client}}</td>
+                            <td>{{k.Loc}}</td>
+                            <td>{{k.last_update}}</td>
+                            <td>{{k.Tot}}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+            <td >
+               <h1 style="text-align:center;" > Count:{{count}} </h1>
+            </td>
+            <td>
+                <h1 style="text-align:center;">Average Dwell Time:<div class="spacing1"></div>
+                    {{avg}} Minutes </h1>
+            </td>
+
+        </tr>
+    </table>            
+</body>    
+<script type ="text/javascript">
+    
+    var dayData = JSON.parse("{{barDay |escapejs}}").map(
+        function(arr){
+            return [Date.parse(arr[0]),arr[1]]
+        }
+    );
+    console.log(dayData);
+    Highcharts.chart('pieChart',{
+    chart:{
+      plotBackgroundColor: null,
+      plotBorderWidth: null,
+      plotShadow: false,
+      type: 'pie'
+      },
+      title: {
+          text: 'Type Of Charges'
+      },
+      tooltip: {
+          pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+      },
+      plotOptions: {
+          pie: {
+              allowPointSelect: true,
+              cursor: 'pointer',
+              dataLabels: {
+                  enabled: true,
+                  format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                  style: {
+                      color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                  }
+              }
+          }
+      },
+      series: [{
+          name: 'Type',
+          colorByPoint: true,
+          data:JSON.parse("{{pie |escapejs}}")
+      }]
+    });
+
+
+
+
+
+    Highcharts.chart('barTime',{
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Foot Traffic By Hour'
+        },
+        xAxis: {
+            categories: ['1 AM','2 AM','3 AM','4 AM','5 AM','6 AM','7 AM','8 AM','9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM', '6 PM','7 PM','8 PM','9 PM','10 PM','11 PM','12 AM'],
+            title: {
+                text: null
+            }
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Charges',
+                align: 'high'
+            },
+            labels: {
+                overflow: 'justify'
+            }
+        },
+        plotOptions: {
+            bar: {
+                dataLabels: {
+                    enabled: true
+                }
+            }
+        },
+        credits: {
+            enabled: false
+        },
+        series: [
+           {
+            name: 'Charges',
+            data:JSON.parse("{{barTime |escapejs}}")
+        }]
+    });
+
+
+
+
+
+
+
+
+    Highcharts.chart('barDay', {
+        chart: {
+            zoomType:'x',
+        },
+        title: {
+            text: 'Foot Traffic By Day'
+        },
+        xAxis: {
+            type:'datetime',
+            dateTimeLabelFormats:{
+                da:'%e of %b'
+            }
+        },
+        yAxis: {
+            title:{
+                text:'Charges'
+            }
+        },
+        plotOptions: {
+            area:{
+              fillColor: {
+                  linearGradient: {
+                      x1: 0,
+                      y1: 0,
+                      x2: 0,
+                      y2: 1
+                  },
+                  stops: [
+                      [0, Highcharts.getOptions().colors[0]],
+                      [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                  ]
+              },
+              marker: {
+                  radius: 2
+              },
+              lineWidth: 1,
+              states: {
+                  hover: {
+                      lineWidth: 1
+                  }
+              },
+              threshold: null
+          } 
+        },
+        series: [
+           {
+            type:'area',
+            name:'Charges',
+            data:dayData
+        }]
+    });
+    </script>    
+    
+</html>

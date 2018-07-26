@@ -17,14 +17,16 @@
     <div id="SampleApp2"></div>
     {% render_bundle 'vendors' %}
     {% render_bundle 'SampleApp2' %}
-    <div style="width:200px">
+ <!--   
+   <div style="width:200px">
     <form action="" method="POST">
     {% csrf_token %}
     Add a port:{% render_field portform.Port class="form-control" %}
     {% render_field portform.Type class="form-control" %}
     <input style="text-decoration: none;" type= "submit"class="transparent_btn" ></input>
   </form>
-  </div>
+  </div> 
+-->
 
     <div class="spacing1"> </div>
     {%if permission == 'admin'%}
@@ -38,8 +40,10 @@
     </form>
     <div class="spacing1"> </div>
 
-    <a style="text-decoration: none;" class="transparent_btn" href="#">Ping</a>
-    <a style="text-decoration: none;" class="transparent_btn" href="#">Reboot</a>
+    <a style="text-decoration: none;" class="transparent_btn"  href="{%url 'analytics:reset_kiosk' ID %}" 
+    
+    onclick="return confirm('Are you sure you want to reset this station')"
+    >Reset</a>
     {%endif%}
 
 

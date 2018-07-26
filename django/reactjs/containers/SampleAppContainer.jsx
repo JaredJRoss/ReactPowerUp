@@ -89,6 +89,7 @@ export default class SampleAppContainer extends React.Component {
           {this.state.dashboard}
           <div style={{textAlign:'center'}}>
           <a style={{text_decoration:"none"}} href="#hidden-div" data-target="#hidden-div" className="transparent_btn" data-toggle="collapse">Advanced Search</a>
+          <a style={{text_decoration:"none"}} href={"/pdf/?"+this.state.search_terms+'&date='+this.state.date+'&start='+this.state.start+'&end='+this.state.end} className="transparent_btn"> Export PDF</a>
             <div id ="hidden-div" className ="collapse" style={{color:"black"}}>
               <div className="spacing1"> </div>
               <form onSubmit={this.handleSearch}>

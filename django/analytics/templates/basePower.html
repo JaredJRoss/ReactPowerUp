@@ -50,11 +50,13 @@
         {% if request.user|has_group:"Admin" or request.user|has_group:"Partner" %}
               <a href="{%url 'analytics:add_kiosk'%}">Add Station</a>
               {% if request.user|has_group:"Admin"%}
+              <a href="{%url 'analytics:signupAdmin'%}">Add Admin</a>
               <a href="{%url 'analytics:signupPartner'%}">Add Partner</a>
               <a href="{%url 'analytics:editPartner'%}">Edit Partner</a>
               <a href="{%url 'analytics:signupClient'%}">Add Client</a>
               <a href="{%url 'analytics:editClient'%}">Edit Client</a>
               {%endif%}
+              <a href ="{%url 'analytics:addLocation'%}">Add Location</a>
               <a href="{%url 'analytics:editLocation'%}">Edit Location</a>
 
             </div>

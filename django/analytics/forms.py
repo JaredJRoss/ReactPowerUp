@@ -25,7 +25,6 @@ class MyRegistrationForm(UserCreationForm):
 
         return user
 
-
 class PartnerForm(forms.ModelForm):
     class Meta:
         model = Partner
@@ -40,7 +39,7 @@ class ClientForm(forms.ModelForm):
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Location
-        fields = ('LocationName',)
+        fields = '__all__'
 
 class KioskForm(forms.ModelForm):
     ID = forms.IntegerField(required=False)

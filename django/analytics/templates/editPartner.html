@@ -5,7 +5,6 @@
 {% load static %}
 {% load auth_extras %}
 
-  <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
     <script type="text/javascript" src="/static/admin/js/vendor/jquery/jquery.js"></script>
     <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/select2.css' %}" />
     <script type="text/javascript" src="{% static 'autocomplete_light/jquery.init.js' %}"></script>
@@ -14,7 +13,20 @@
     <link rel="stylesheet" type="text/css" href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" />
     <script type="text/javascript" src="{% static 'autocomplete_light/vendor/select2/dist/js/select2.full.js' %}"></script>
     <script type="text/javascript" src="{% static 'autocomplete_light/forward.js' %}"></script>
-    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+    <script type = "text/javascript">
+      function deletePartner(){
+        var pk = document.getElementById("id_Partner").value;
+        if (pk ===''){
+
+          alert('Please pick a partner')
+        }
+        else{
+          var r = confirm("Are you sure you want to delete this partner");
+          if (r==true){document.getElementById("delete").href = "/delete-partner/"+pk+"/"}
+        }
+      };
+    </script>
+
     <div style = "  justify-content: center;">
 
     <div class="spacing1"></div>
@@ -27,12 +39,20 @@
       <div class='spacing1'></div>
       Updated Partner Name: <input type="text" name="PartnerName" maxlength="150" style="display:inline-block" class="form-control"/>
       <div class='spacing1'></div>
+      {% if request.user|has_group:"Admin"%}
+      Add a client : <select name="Client" style="display:inline-block" class="form-control" id="id_Client" data-autocomplete-light-url="/client-autocomplete/" data-autocomplete-light-function="select2"></select>
+      <div class="spacing1"></div>
+      {%endif%}
       <button type = "submit">Edit Partner</button>
     </form>
     <div class="spacing1"></div>
+    <a style="text-decoration: none;" id="delete" href="#" onclick="deletePartner()" ><button> Delete Partner</button> </a>
 
-    <a href = '{%url 'analytics:home'%}'><button>Home</button></a>
+
+    <div class='spacing1'></div>
+    <a href = "{%url 'analytics:home'%}"><button>Home</button></a>
     <div class='spacing1'></div>
     <div class='spacing1'></div>
+
   </div>
     {% endblock %}
