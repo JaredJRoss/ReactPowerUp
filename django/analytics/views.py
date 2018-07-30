@@ -42,10 +42,8 @@ def signupPartner(request):
             try:
                 partner = Partner.objects.get(pk=p)
             except Partner.DoesNotExist:
-                if p:
-                    partner = Partner.objects.create(PartnerName = p)    
-                else:
-                    return render(request,'signupPartner.html',{'form':form,'alert':'Please pick a partner'})
+                return render(request,'signupPartner.html',{'form':form,'alert':'Please pick a partner or use the drop down to create a new one'})
+
             user = form.save()
             UserToPartner.objects.create(User = user, Partner = partner)
             group = Group.objects.get(name='Partner')
@@ -74,15 +72,18 @@ def signupClient(request):
     if request.method == 'POST':
         print(request.POST)
         if form.is_valid():
-            user = form.save()
             c = request.POST.get("Client",None)
-            client = Client.objects.get(pk = c)
+            try:
+                client = Client.objects.get(pk = c)
+            except Client.DoesNotExist:
+                return render(request, 'signupClient.html', {'form': form, 'alert':'Please select a client or use the dropdown to create a new one'})
+            user = form.save()            
             UserToClient.objects.create(User = user, Client = client)
             group =  Group.objects.get(name='Client')
             group.user_set.add(user)
             return HttpResponseRedirect(reverse('analytics:home'))
 
-    return render(request, 'signupClient.html', {'form': form})
+    return render(request, 'signupClient.html', {'form': form,alert:''})
 
 @ensure_csrf_cookie
 def edit_client(request):

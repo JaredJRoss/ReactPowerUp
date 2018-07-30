@@ -24,6 +24,8 @@ class Client(models.Model):
 
     ClientName = models.CharField(name = "ClientName", max_length=150,unique=True)
     Logo = models.FileField(upload_to='logo',blank=True,null=True)
+    Archive = models.BooleanField(default = True)
+    
 class UserToClient(models.Model):
     User = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client,on_delete = models.CASCADE)

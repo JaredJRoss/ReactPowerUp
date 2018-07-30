@@ -18,6 +18,10 @@
     <div class="spacing1"></div>
     <h2>Sign Up Client</h2>
     <form method="post">
+        {%if alert == '' %}
+        {%else%}
+        <script>alert("{{alert}}")</script>
+        {%endif%}
       {% csrf_token %}
       Client : <select name="Client" style="display:inline-block" class="form-control" id="id_Client" data-autocomplete-light-url="/client-autocomplete/" data-autocomplete-light-function="select2"></select>
       <div class="spacing1"></div>
