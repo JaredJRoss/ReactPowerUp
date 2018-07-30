@@ -49,6 +49,7 @@ def signupPartner(request):
             group = Group.objects.get(name='Partner')
             group.user_set.add(user)
             return HttpResponseRedirect(reverse('analytics:home'))
+
     return render(request, 'signupPartner.html', {'form': form,'alert':''})
 
 def signupAdmin(request):
@@ -479,10 +480,10 @@ def filter_dates(times,GET):
         elif last == 'year':
             start_date = end_date.replace(month=1,day=1)
     start = GET.get('start',None)
-    if start != None and start !='':
+    if start != None and start !='' and start !='undefined' :
         start_date = parser.parse(start)
     end = GET.get('end',None)
-    if end != None and end!='':
+    if end != None and end!='' and end !='undefined' :
         end_date = parser.parse(end)
     return times.filter(TimeIn__range=(start_date,end_date))
 
