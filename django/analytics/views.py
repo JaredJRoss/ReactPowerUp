@@ -39,17 +39,19 @@ def signupPartner(request):
         print("FORM",form.errors)
         if form.is_valid():
             p = request.POST.get("Partner", None)
-            print(p)
             try:
                 partner = Partner.objects.get(pk=p)
             except Partner.DoesNotExist:
-                partner = Partner.objects.create(PartnerName = p)    
+                if p:
+                    partner = Partner.objects.create(PartnerName = p)    
+                else:
+                    return render(request,'signupPartner.html',{'form':form,'alert':'Please pick a partner'})
             user = form.save()
             UserToPartner.objects.create(User = user, Partner = partner)
             group = Group.objects.get(name='Partner')
             group.user_set.add(user)
             return HttpResponseRedirect(reverse('analytics:home'))
-    return render(request, 'signupPartner.html', {'form': form})
+    return render(request, 'signupPartner.html', {'form': form,'alert':''})
 
 def signupAdmin(request):
     if not request.user.groups.filter(name='Admin').exists():
@@ -583,7 +585,7 @@ def make_location(request):
         locationform = LocationForm(request.POST or None)
         print(locationform.fields)
         if locationform.is_valid():
-            location = locafieldsve()
+            location = locationform.save()
             return HttpResponseRedirect(reverse('analytics:home'))
 
         return render(request,'new_location.html',{'locationform':locationform})
