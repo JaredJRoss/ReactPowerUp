@@ -91,7 +91,6 @@
             return [Date.parse(arr[0]),arr[1]]
         }
     );
-    console.log(dayData);
     Highcharts.chart('pieChart',{
     chart:{
       plotBackgroundColor: null,
@@ -99,6 +98,7 @@
       plotShadow: false,
       type: 'pie'
       },
+      exporting: { enabled: false },
       title: {
           text: 'Type Of Charges'
       },
@@ -133,6 +133,7 @@
         chart: {
             type: 'column'
         },
+        exporting: { enabled: false },
         title: {
             text: 'Foot Traffic By Hour'
         },
@@ -180,6 +181,7 @@
         chart: {
             zoomType:'x',
         },
+        exporting: { enabled: false },
         title: {
             text: 'Foot Traffic By Day'
         },

@@ -84,7 +84,7 @@ def signupClient(request):
             group.user_set.add(user)
             return HttpResponseRedirect(reverse('analytics:home'))
 
-    return render(request, 'signupClient.html', {'form': form,alert:''})
+    return render(request, 'signupClient.html', {'form': form,"alert":''})
 
 @ensure_csrf_cookie
 def edit_client(request):
