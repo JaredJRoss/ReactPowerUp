@@ -11,16 +11,19 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGIN_REDIRECT_URL = 'analytics:home'
 
+with open(os.path.join(BASE_DIR,"djreact","settings.json")) as f:
+    secret_settings = json.load(f)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'y-($z@)bwfp0$_7&ds@tj7%r5e(x)9dyscsawgxd9i=)%1^7ii'
+SECRET_KEY = secret_settings["secretkey"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -106,19 +109,8 @@ else:
             }
         }
     if 1==1:
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.mysql',
-                'NAME':'ebdb',
-                'USER': 'powerup',
-                'PASSWORD': 'poweruppassword',
-                'HOST': 'aap0tx55jsp1vf.cet5xkp4eqrw.us-east-1.rds.amazonaws.com',
-                'PORT': '3306',
-                'OPTIONS': {
-                    'sql_mode': 'traditional',
-                }
-            }
-        }
+        DATABASES = secret_settings["database"]
+        
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
