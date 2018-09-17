@@ -40,7 +40,7 @@
       Updated Partner Name: <input type="text" name="PartnerName" maxlength="150" style="display:inline-block" class="form-control"/>
       <div class='spacing1'></div>
       {% if request.user|has_group:"Admin"%}
-      Add a client : <select name="Client" style="display:inline-block" class="form-control" id="id_Client" data-autocomplete-light-url="/client-autocomplete/" data-autocomplete-light-function="select2"></select>
+      Add a client : <select name="Client" multiple= "true" style="display:inline-block" class="form-control" id="id_Client" data-autocomplete-light-url="/client-autocomplete/" data-autocomplete-light-function="select2"></select>
       <div class="spacing1"></div>
       {%endif%}
       <button type = "submit">Edit Partner</button>

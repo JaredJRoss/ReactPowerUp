@@ -4,6 +4,7 @@ from django import forms
 from django.forms import TextInput
 from dal import autocomplete
 
+#Filter to use autocomplete and search on the terms
 class KioskFilter(django_filters.FilterSet):
     Location = django_filters.ModelMultipleChoiceFilter(queryset=Location.objects.all(),
     widget = autocomplete.ModelSelect2Multiple(url="analytics:location-autocomplete"))

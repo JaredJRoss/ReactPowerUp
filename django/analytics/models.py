@@ -2,6 +2,8 @@ from django.db import models
 from django.conf import settings
 
 #All Classes
+
+#This was made when testing for connection to boards
 class ServerTest(models.Model):
     def __str__(self):
         return self.Test
@@ -14,10 +16,12 @@ class Partner(models.Model):
 
     PartnerName = models.CharField(name = "PartnerName",max_length = 150)
 
+#Connects a user to a partner
 class UserToPartner(models.Model):
     User = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     Partner = models.ForeignKey(Partner,on_delete = models.CASCADE)    
-#Keep Track of clients who are using kiosks
+
+#Keep track of clients who are using kiosks
 class Client(models.Model):
     def __str__(self):
         return self.ClientName
@@ -25,10 +29,12 @@ class Client(models.Model):
     ClientName = models.CharField(name = "ClientName", max_length=150,unique=True)
     Logo = models.FileField(upload_to='logo',blank=True,null=True)
     Archive = models.BooleanField(default = True)
-    
+
+#Connects a user to a client    
 class UserToClient(models.Model):
     User = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client,on_delete = models.CASCADE)
+
 #Catergories for type of clients for search purposes
 class Catergories(models.Model):
     def __str__(self):
@@ -57,13 +63,15 @@ class Kiosk(models.Model):
     Client = models.ForeignKey(Client,related_name='KioskToClient' ,on_delete=models.CASCADE)
     CreatedOn= models.DateTimeField()
 
+#For when you want to reset a kiosk but save its information    
 class KioskHistory(models.Model):
     ID = models.IntegerField(verbose_name="HistID", primary_key=True)
     Location = models.ForeignKey(Location,blank=True,null=True, related_name='KioskHistToLocation' ,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client,related_name='KioskHistToClient' ,on_delete=models.CASCADE)
     CreatedOn= models.DateTimeField()
     DeactivatedOn = models.DateTimeField()
-    #Port number on the board for charging need to identify with port number and kiosk
+
+#Port number on the board for charging need to identify with port number and kiosk
 #has own primary key to make relational easier
 class Port(models.Model):
     def __str__(self):
@@ -94,14 +102,18 @@ class Time(models.Model):
     TimeIn = models.DateTimeField(verbose_name = "TimeIn")
     TimeOut = models.DateTimeField(verbose_name = "TimeOut")
     Duration = models.IntegerField(verbose_name= "Duration")
+
 #Relational Tables
 
 #Match partners with client
 class PartnerToClient(models.Model):
     def __str__(self):
         return "Partner:"+self.Partner.PartnerName + " has Client "+self.Client.ClientName
+    
     Partner = models.ForeignKey(Partner ,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client ,on_delete=models.CASCADE)
+    class Meta:
+        unique_together = ("Partner", "Client",)
 
 class PartnerToKiosk(models.Model):
     def __str__(self):
@@ -114,9 +126,3 @@ class ClientToType(models.Model):
         return "Client:"+self.Client.ClientName + " has type "+self.Type.Type
     Type = models.ForeignKey(Catergories ,on_delete=models.CASCADE)
     Client = models.ForeignKey(Client ,on_delete=models.CASCADE)
-    
-class DayCount(models.Model):
-    def __str__(self):
-        return "Date "+str(self.Date)+ " Count" + str(self.Count)
-    Date = models.DateTimeField(verbose_name="Date")
-    Count = models.IntegerField(verbose_name="Count")

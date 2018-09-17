@@ -43,13 +43,11 @@ urlpatterns=[
     url(r'^api/dash$', Dashboard.as_view(), name='dash'),
     url(r'^api/kiosk$',KioskDetails.as_view()),
     url(r'kiosk/(?P<pk>\d+)$', kiosk_view, name='kiosk'),
-    url(r'search/$',search,name='search'),
     url(r'^login/$', auth_views.login,{'template_name': 'login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': 'analytics:login'},name='logout'),
     url(r'^signupPartner/$', signupPartner, name='signupPartner'),
     url(r'^signupClient/$', signupClient, name='signupClient'),
     url(r'^signupAdmin/$', signupAdmin, name='signupAdmin'),
-    url(r'^pdf/test/$',pdf,name="pdf"),
-    url(r'pdf/',testPdf,name="test")
+    url(r'pdf/',PDF,name="test")
 
 ]

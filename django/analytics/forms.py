@@ -4,6 +4,7 @@ from dal import autocomplete
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Group
 
+#This form is used to create a new user for clients, admin and partners
 class MyRegistrationForm(UserCreationForm):
     email = forms.EmailField(required = True)
     first_name = forms.CharField(required = False)
@@ -25,22 +26,27 @@ class MyRegistrationForm(UserCreationForm):
 
         return user
 
+#creates a new partner not including the user which is hooked up in the views
 class PartnerForm(forms.ModelForm):
     class Meta:
         model = Partner
         exclude=('User',)
         fields = '__all__'
 
+#creates a new client with a clientname
+
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields=('ClientName',)
 
+#creates a new location with all fields from the model
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Location
         fields = '__all__'
 
+#creates a new kiosk that can use the autocomplete fields 
 class KioskForm(forms.ModelForm):
     ID = forms.IntegerField(required=False)
     class Meta:
@@ -52,6 +58,7 @@ class KioskForm(forms.ModelForm):
         'Location':autocomplete.ModelSelect2(url='analytics:location-autocomplete')
         }
 
+#Links a partner to a kiosk
 class PartnerToKioskForm(forms.ModelForm):
     class Meta:
         model = PartnerToKiosk
@@ -59,6 +66,8 @@ class PartnerToKioskForm(forms.ModelForm):
         widgets= {
         'Partner':autocomplete.ModelSelect2(url='analytics:partner-autocomplete'),
         }
+
+#creates a new port not including the kiosk which is hooked up in views         
 class PortForm(forms.ModelForm):
     class Meta:
         model = Port
