@@ -29,23 +29,6 @@ from .filters import *
 #pdf
 from .render import Render
 
-#creating everything that is needed like client location partner and kiosk
-@ensure_csrf_cookie
-def make_partner(request):
-    if request.user.is_authenticated and request.user.groups.filter(name='Admin').exists():
-        partnerform = PartnerForm(request.POST or None)
-        if partnerform.is_valid():
-            partner = partnerform.save(commit = False)
-            myuser = User.objects.create_user(partner.PartnerName,'','password',is_staff=True)
-            partner.User = myuser
-            group =  Group.objects.get(name='Partner')
-            group.user_set.add(myuser)
-            partner.save()
-            return HttpResponseRedirect(reverse('analytics:home'))
-        return render(request,'new_partner.html',{'partnerform':partnerform})
-    else:
-        return HttpResponseRedirect(reverse('analytics:home'))
-
 
 @ensure_csrf_cookie
 def make_location(request):
@@ -333,9 +316,10 @@ def mainpage(request):
         'user':request.user.username
         }
         print(context)
-        return render(request,'sample_app.html',context)
+        return render(request,'homePage.html',context)
     else:
         return HttpResponseRedirect(reverse('analytics:login'))
+        
 #Added the api functions in here because django does not like the circular imports since api uses
 #filter dates so just copied them here they both do the same thing
 def kiosk_info(request):

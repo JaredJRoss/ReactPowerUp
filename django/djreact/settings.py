@@ -28,7 +28,7 @@ SECRET_KEY = secret_settings["secretkey"]
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.elasticbeanstalk.com','127.0.0.1','analytics.powerupconnect.com']
+ALLOWED_HOSTS = ['.elasticbeanstalk.com','127.0.0.1','localhost','analytics.powerupconnect.com']
 CSRF_USE_SESSIONS = True
 CSRF_COOKIE_HTTPONLY =False
 # Application definition
@@ -101,14 +101,14 @@ if 'RDS_DB_NAME' in os.environ:
         }
     }
 else:
-    if 1==0:
+    if 1==1:
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
             }
         }
-    if 1==1:
+    if 1==0:
         DATABASES = secret_settings["database"]
         
 

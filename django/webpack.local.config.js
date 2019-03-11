@@ -1,46 +1,57 @@
-var path = require("path")
 var webpack = require('webpack')
 var BundleTracker = require('webpack-bundle-tracker')
-
 var config = require('./webpack.base.config.js')
-var localSettings = require('./webpack.local-settings.js')
-
-var ip = localSettings.ip
 
 config.devtool = "#eval-source-map"
 
-config.ip = ip
+config.output.path = require('path').resolve('./djreact/static/bundles/local/')
+config.output.publicPath = 'http://127.0.0.1:3000/static/bundles/local/'
 
-// Use webpack dev server
+console.log(config.output.path)
+config.ip = '127.0.0.1',
+
 config.entry = {
-  SampleApp: [
-    'webpack-dev-server/client?http://' + ip + ':8000',
-    './reactjs/SampleApp',
+  // Add as many entry points as you have container-react-components here
+  SampleApp:[
+    'webpack-dev-server/client?http://' + config.ip + ':8000',
+    './reactjs/SampleApp'
   ],
   SampleApp2: [
-    'webpack-dev-server/client?http://' + ip + ':8000',
+    'webpack-dev-server/client?http://' + config.ip + ':8000',
     './reactjs/SampleApp2',
-  ]
-}
+  ],
+  PDF:[
+    'webpack-dev-server/client?http://' + config.ip + ':8000',
+    './reactjs/PDF'
+  ],
+  vendors: ['react'],
+},
 
-// override django's STATIC_URL for webpack bundles
-config.output.publicPath = 'http://' + ip + ':8000' + '/static/bundles/local/'
-
-// Add HotModuleReplacementPlugin and BundleTracker plugins
 config.plugins = config.plugins.concat([
   new webpack.HotModuleReplacementPlugin(),
   new webpack.NoErrorsPlugin(),
-  new BundleTracker({filename: './webpack-stats-local.json'}),
+  new BundleTracker({filename: './webpack-stats-stage.json'}),
+  // removes a lot of debugging code in React
   new webpack.DefinePlugin({
     'process.env': {
-      'NODE_ENV': JSON.stringify('development'),
-      'BASE_API_URL': JSON.stringify('https://'+ ip +':8000/api/v1/'),
+      'NODE_ENV': JSON.stringify('staging'),
+      'BASE_API_URL': JSON.stringify('http://127.0.0.1:8000/static/bundles/local/'),
   }}),
+
+  // keeps hashes consistent between compilations
+  new webpack.optimize.OccurenceOrderPlugin(),
+
+  // minifies your code
+  new webpack.optimize.UglifyJsPlugin({
+    compressor: {
+      warnings: false
+    }
+  })
 ])
 
-// Add a loader for JSX files with react-hot enabled
+// Add a loader for JSX files
 config.module.loaders.push(
-  { test: /\.jsx?$/, exclude: /node_modules/, loaders: ['react-hot', 'babel'] }
+  { test: /\.jsx?$/, exclude: /node_modules/, loaders: ['react-hot', 'babel']}
 )
 
 module.exports = config
