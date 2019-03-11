@@ -22,7 +22,6 @@ urlpatterns=[
     url(r'^$',mainpage,name='home'),
     url(r'add_location',make_location,name="addLocation"),
     url(r'add_kiosk/$',make_kiosk, name='add_kiosk'),
-    url(r'add_partner/$', make_partner, name='add_partner'),
     url(r'edit_port/(?P<pk>\d+)$',edit_port,name='edit_port'),
     url(r'edit_kiosk/(?P<pk>\d+)$',edit_kiosk,name='edit_kiosk'),
     url(r'reset_kisok/(?P<pk>\d+)/$',resetKiosk,name="reset_kiosk"),
