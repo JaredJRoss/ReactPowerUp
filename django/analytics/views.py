@@ -77,6 +77,7 @@ def signupPartner(request):
 
     #User form
     form = MyRegistrationForm(request.POST or None)
+    alert = ''
     if request.method == 'POST':
         #If the the user is valid continue
         if form.is_valid():
@@ -95,8 +96,11 @@ def signupPartner(request):
             group = Group.objects.get(name='Partner')
             group.user_set.add(user)
             return HttpResponseRedirect(reverse('analytics:home'))
+        else:
+            alert = form.errors
+            print(alert)
 
-    return render(request, 'signupPartner.html', {'form': form,'alert':''})
+    return render(request, 'signupPartner.html', {'form': form,'alert':alert})
 
 #create a new admin user
 def signupAdmin(request):
@@ -105,6 +109,7 @@ def signupAdmin(request):
         return HttpResponseRedirect(reverse('analytics:home'))
 
     form = MyRegistrationForm(request.POST or None)
+    alert = ''
     #if a valid user is made link them up to the admin group
     if request.method == 'POST':
         if form.is_valid():
@@ -112,8 +117,9 @@ def signupAdmin(request):
             group = Group.objects.get(name='Admin')
             group.user_set.add(user)
             return HttpResponseRedirect(reverse('analytics:home'))
-
-    return render(request, 'signupAdmin.html', {'form': form})
+        else:
+            alert = form.errors
+    return render(request, 'signupAdmin.html', {'form': form,'alert':alert})
 
 #Create a user for a new client
 def signupClient(request):
@@ -123,6 +129,8 @@ def signupClient(request):
 
     #form to make a new user
     form = MyRegistrationForm(request.POST or None)
+    alert = ''
+    
     if request.method == 'POST':
         if form.is_valid():
 
@@ -139,8 +147,10 @@ def signupClient(request):
             group =  Group.objects.get(name='Client')
             group.user_set.add(user)
             return HttpResponseRedirect(reverse('analytics:home'))
+        else:
+            alert = form.errors
 
-    return render(request, 'signupClient.html', {'form': form,"alert":''})
+    return render(request, 'signupClient.html', {'form': form,"alert":alert})
 
 @ensure_csrf_cookie
 def edit_client(request):
