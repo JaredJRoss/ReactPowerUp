@@ -257,7 +257,12 @@ class Search(APIView):
             k = {}
             k['ID'] = kiosk.ID
             k['Client'] = kiosk.Client.ClientName
-            k['Loc'] = kiosk.Location.LocationName
+            
+            if  kiosk.Location:
+                k['Loc'] = kiosk.Location.LocationName
+            else:
+                k['Loc'] = 'None'
+
             ports = Port.objects.filter(Kiosk = kiosk)
             times = Time.objects.filter(Port__in = ports)
             times = filter_dates(times,request.GET)
