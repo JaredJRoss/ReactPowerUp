@@ -10,7 +10,7 @@ cffi==1.11.4
 colorama==0.3.7
 cryptography==2.3
 decorator==4.2.1
-Django==2.0.2
+Django==2.2.13
 django-autocomplete-light==3.3.0rc3
 django-crispy-forms==1.7.0
 django-filter==1.1.0
